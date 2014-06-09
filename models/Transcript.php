@@ -1,16 +1,17 @@
 <?php
 /**
- * @copyright
+ * @copyright 2014 Steve Knoblock
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
  * @package ItemTranscript
  */
- 
+
+
 /**
- * Transcript model.
+ * The ItemTranscript record class.
  *
  * @package ItemTranscript
  */
-class Transcript extends Omeka_Record_AbstractRecord implements Zend_Acl_Resource_Interface
+class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Resource_Interface */
 {
     /**
      * Transcript title.
@@ -48,27 +49,6 @@ class Transcript extends Omeka_Record_AbstractRecord implements Zend_Acl_Resourc
     public $public = 1;
     
     /**
-     * Public theme to use for this transcript.
-     *
-     * @var string
-     */
-    public $theme;
-
-    /**
-     * Options for this transcript's theme, serialized.
-     *
-     * @var string
-     */
-    public $theme_options;
-    
-    /**
-     * URL slug for the transcript.
-     *
-     * @var string
-     */
-    public $slug;
-    
-    /**
      * Date the transcript was created, as a MySQL-formatted date string.
      *
      * @var string
@@ -91,6 +71,87 @@ class Transcript extends Omeka_Record_AbstractRecord implements Zend_Acl_Resourc
 
 
     /**
+     * Initialize the mixins.
+     */
+    protected function _initializeMixins()
+    {
+    /*
+        $this->_mixins[] = new Mixin_Tag($this);
+        $this->_mixins[] = new Mixin_Owner($this);
+        $this->_mixins[] = new Mixin_PublicFeatured($this);
+        $this->_mixins[] = new Mixin_Timestamp($this);
+    */
+        $this->_mixins[] = new Mixin_ElementText($this);
+        $this->_mixins[] = new Mixin_Search($this);
+    }
+    
+
+    // ActiveRecord callbacks
+
+    /**
+     * Before-save ActiveRecord callback.
+     *
+     * @param array $args
+     */
+    protected function beforeSave($args)
+    {
+        if ($args['post']) {
+            $post = $args['post'];
+            
+            $this->beforeSaveElements($post);
+            
+            if (!empty($post['change_type'])) {
+                return false;
+            }
+        }
+    }
+    
+
+    
+    /**
+     * After-save ActiveRecord callback.
+     *
+     * Updates search text and page data for the transcript.
+     *
+     * @param array $args
+     */
+    protected function afterSave($args)
+    {
+        if (!$this->public) {
+            $this->setSearchTextPrivate();
+        }
+        $this->setSearchTextTitle($this->title);
+        $this->addSearchText($this->title);
+        $this->addSearchText($this->description);
+        
+        if ($args['post']) {
+
+            $post = $args['post'];
+            
+            //Add the tags after the form has been saved
+            /* only if tag support needed
+            $this->applyTagString($post['tags']);
+            if (isset($post['pages-hidden'])) {
+                parse_str($post['pages-hidden'], $pageData);
+                $this->_savePages($pageData['page']);
+            }
+			*/
+			
+			/* only retain this if necessary to delete transcript entries marked delete in the admin interface */
+            if (isset($post['pages-delete-hidden'])) {
+                $pagesToDelete = explode(',', $post['pages-delete-hidden']);
+                foreach ($pagesToDelete as $id) {
+                    $page = $this->getTable('TranscriptPage')->find($id);
+                    if ($page) {
+                        $page->delete();
+                    }
+                }
+            }
+            */
+        }
+    }
+    
+    /**
      * Validation callback.
      */
     protected function _validate()
@@ -103,9 +164,6 @@ class Transcript extends Omeka_Record_AbstractRecord implements Zend_Acl_Resourc
             $this->addError('title', __('The title for an transcript must be 255 characters or less.'));
         }
 
-        if (strlen((string)$this->theme) > 30) {
-            $this->addError('theme', __('The name of your theme must be 30 characters or less.'));
-        }
     }
 
     /**
@@ -123,42 +181,7 @@ class Transcript extends Omeka_Record_AbstractRecord implements Zend_Acl_Resourc
         $this->deleteTaggings();
     }
 
-    /**
-     * After-save callback.
-     *
-     * Updates search text and page data for the transcript.
-     *
-     * @param array $args
-     */
-    protected function afterSave($args)
-    {
-        if (!$this->public) {
-            $this->setSearchTextPrivate();
-        }
-        $this->setSearchTextTitle($this->title);
-        $this->addSearchText($this->title);
-        $this->addSearchText($this->description);
-        
-        if ($args['post']) {
-            //Add the tags after the form has been saved
-            $post = $args['post'];
-            $this->applyTagString($post['tags']);
-            if (isset($post['pages-hidden'])) {
-                parse_str($post['pages-hidden'], $pageData);
-                $this->_savePages($pageData['page']);
-            }
 
-            if (isset($post['pages-delete-hidden'])) {
-                $pagesToDelete = explode(',', $post['pages-delete-hidden']);
-                foreach ($pagesToDelete as $id) {
-                    $page = $this->getTable('TranscriptPage')->find($id);
-                    if ($page) {
-                        $page->delete();
-                    }
-                }
-            }
-        }
-    }
 
     /**
      * Required by Zend_Acl_Resource_Interface.

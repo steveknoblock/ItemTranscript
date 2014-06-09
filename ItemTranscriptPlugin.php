@@ -8,9 +8,8 @@
  */
 
 
-
 /**
- * Item Relations plugin.
+ * ItemTranscript plugin.
  */
 class ItemTranscriptPlugin extends Omeka_Plugin_AbstractPlugin
 {
