@@ -12,8 +12,6 @@
  * @package ItemTranscript
  */
  
- // naming convention: this is a plugin, so the plugin name is prefixed to the controller name, so if this is the Transcripts Controller for plugin ItemTranscript, the full name is ItemTranscript_TranscriptsController, if this were not a plugin, it would just be TranscriptsController
- 
 class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActionController
 {
     /**
@@ -34,21 +32,27 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
     	debug('addAction');
         //throw new Omeka_Controller_Exception_404;
 
+
         // Create a new transcript.
-        $transcript = new Transcript;
+       	$transcript = new Transcript;
         
+        debug('new Transcript');
         
         // Get all the element sets that apply to the item.
        // $this->view->elementSets = $this->_getItemElementSets();
         
        
 		if ($this->getRequest()->isPost()) {
-        	$this->_processTranscriptForm($transcript, 'add');
-       } else {
-        $this->view->form = "FORM";
-        $this->render('add');
+			debug('Processing request');
+			$this->_processTranscriptForm($transcript, 'add');
+		} else {
+			debug('Getting form');
+			$tmp = $this->_getForm($transcript);
+			debug('Displaying form');
+			$this->view->form = $tmp;
+			$this->render('transcript-form');
 		}
-    }
+	}
 
 
     /**
@@ -60,67 +64,152 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         throw new Omeka_Controller_Exception_404;
     }
 
-
-	protected function _processTranscriptForm($transcript, $mode) {
 	
+	/**
+	 * Process the form submission for add or edit actions.
+	 */
+	protected function _processTranscriptForm($transcript, $mode)
+	{
+		debug('Processing transcript form');
 		$transcript->setPostData($_POST);
         if ($transcript->save()) {
-            if ('add' == $action) {
-                $this->_helper->flashMessenger(__('The page "%s" has been added.', $transcript->title), 'success');
+            if ('add' == $mode) {
+                $this->_helper->flashMessenger(__('The transcript "%s" has been added.', $transcript->title), 'success');
             }        
 		}
 	}            
 
 
-    /**
-     * Add a transcript.
-     *
-     * The URL param 'id' refers to the exhibit that will contain the page, and
-     * 'previous' refers to an existing page the new one will be placed after.
-     */
-    public function addTranscriptAction()
-    {
-        $db = $this->_helper->db->getDb();
-        $request = $this->getRequest();
-        $transcriptId = $request->getParam('id');
-      
-        $success = $this->processTranscriptForm($transcriptentry, 'Add', $transcript);
-        if ($success) {
-            $this->_helper->flashMessenger("Changes to the transcripts's page were successfully saved!", 'success');
- 
-                $this->_helper->redirector->gotoRoute(array('action' => 'edit-page', 'id' => $exhibitPage->id), 'exhibitStandard');
-            
-            return;
-        }
-
-        $this->render('transcript-metadata-form');
-    }
-    
 	/**
-     * Handle the POST for the transcript add and edit actions.
-     *
-     * @param Transcript $transcript
-     * @param string $actionName
+	 * Generate and return the HMTL for the transcript form.
+	 * This is typically be made available to the view.
+	 * @param $transcript object
+	 * @return string HTML
+	 */
+	protected function _getForm($transcript)
+	{
+	
+		debug('_getForm');
+		
+	 	$formOptions = array('type' => 'item_transcript_transcript', 'hasPublicPage' => true);
+        if ($transcript && $transcript->exists()) {
+            $formOptions['record'] = $transcript;
+        }
+		$form = new Omeka_Form_Admin($formOptions);
+		
+        $form->addElementToEditGroup(
+            'text', 'title',
+            array(
+                'id' => 'item-transcript-title',
+                'value' => $transcript->title,
+                'label' => __('Title'),
+                'description' => __('Name of transcript (required)'),
+                'required' => true
+            )
+        );
+	
+	    $form->addElementToEditGroup(
+            'textarea', 'description',
+            array('id' => 'item-transcript-description',
+                'cols'  => 50,
+                'rows'  => 7,
+                'value' => $transcript->description,
+                'label' => __('Description'),
+                'description' => __('Description of transcript'),
+                'required' => false
+                )
+        );
+
+		$form->addElementToEditGroup(
+            'textarea', 'entry',
+            array('id' => 'item-transcript-entry',
+                'cols'  => 50,
+                'rows'  => 7,
+                'value' => $transcript->entry,
+                'label' => __('Transcript Entry'),
+                'description' => __('Add transcript text (using SpeakUp!) markup')
+            )
+        );
+        
+	 	return $form;
+	
+	}
+
+
+
+
+    /**
+     * Browse transcripts action.
      */
-    protected function processTranscriptForm($transcript, $actionName)
+    public function browseAction()
     {
-        $this->view->assign(compact('exhibit', 'actionName'));
-        $this->view->exhibit_page = $transcript;
-        if ($this->getRequest()->isPost()) {
-            $transcript->setPostData($_POST);
-            try {
-                $success = $transcript->save();
-                return true;
-            } catch (Exception $e) {
-                $this->_helper->flashMessenger($e->getMessage(), 'error');
-                return false;
+    	debug('In browseAction');
+        //$request = $this->getRequest();
+        //$sortParam = $request->getParam('sort');
+        //$sortOptionValue = get_option('item_transcript_sort_browse');
+/*
+        if (!isset($sortParam)) {
+            switch ($sortOptionValue) {
+                case 'alpha':
+                    //$request->setParam('sort', 'alpha');
+                    break;
+                case 'recent':
+                    //$request->setParam('sort', 'recent');
+                    break;
             }
         }
+*/
+        parent::browseAction();
+    }
+
+
+
+    /**
+     * Show transcript page.
+     */
+    public function showAction()
+    {
+    	debug('showAction');
+        
+        /*
+        if (!$transcript) {
+            throw new Omeka_Controller_Exception_404;
+        }
+        */
+        
+        debug('About to get id parameter value');
+        
+        // Get the page object from the passed ID.
+        $transcriptId = $this->_getParam('id');
+        
+        debug('Looking for transcript: '. $transcriptId);
+        
+        $transcript = $this->_helper->db->getTable('Transcript')->find($transcriptId);
+        //var_dump($foo);
+       	// 'ItemTranscript_Transcript is converted to
+        // omeka_item_transcript_transcripts
+        
+        /* Restrict access to the page when it is not published.
+        if (!$page->is_published 
+            && !$this->_helper->acl->isAllowed('show-unpublished')) {
+            throw new Omeka_Controller_Exception_403;
+        }
+        */
+        
+		$this->view->transcript = $transcript;
+		debug('About to render view');
+		$this->render('show');
+        
+        
+         parent::showAction();
     }
     
+    
+/****/
 
 
 
+    
 
     /**
      * Use global settings for determining browse page limits.
@@ -136,29 +225,7 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         }
     }
 
-    /**
-     * Browse transcripts action.
-     */
-    public function browseAction()
-    {
-    	debug('In browseAction');
-        $request = $this->getRequest();
-        $sortParam = $request->getParam('sort');
-        $sortOptionValue = get_option('item_transcript_sort_browse');
 
-        if (!isset($sortParam)) {
-            switch ($sortOptionValue) {
-                case 'alpha':
-                    $request->setParam('sort', 'alpha');
-                    break;
-                case 'recent':
-                    $request->setParam('sort', 'recent');
-                    break;
-            }
-        }
-
-        parent::browseAction();
-    }
 
     /**
      * Find an exhibit by its slug.
@@ -186,72 +253,6 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         $this->view->assign(compact('tags'));
     }
 
-    /**
-     * Show item in exhibit action.
-     */
-    public function showItemAction()
-    {
-        $itemId = $this->_getParam('item_id');
-        $item = $this->_helper->db->findById($itemId, 'Item');
-
-        $exhibit = $this->_findByExhibitSlug();
-        if (!$exhibit) {
-            throw new Omeka_Controller_Exception_404;
-        }
-
-        if ($item && $exhibit->hasItem($item) ) {
-            //Plugin hooks
-            fire_plugin_hook('show_exhibit_item',  array('item' => $item, 'exhibit' => $exhibit));
-            $this->view->exhibit = $exhibit;
-            $this->_forward('show', 'items', 'default', array('id' => $itemId));
-        } else {
-            throw new Omeka_Controller_Exception_403(__('This item is not used within this exhibit.'));
-        }
-    }
-
-    /**
-     * Show transcript page.
-     */
-    public function showAction()
-    {
-    	debug('showAction');
-        //$transcript = $this->_findByExhibitSlug();
-        
-        if (!$transcript) {
-            throw new Omeka_Controller_Exception_404;
-        }
-        
-        $params = $this->getRequest()->getParams();
-        unset($params['action']);
-        unset($params['controller']);
-        unset($params['module']);
-        //loop through the page slugs to make sure each one actually exists
-        //then render the last one
-        //pass all the pages into the view so the breadcrumb can be built there
-        unset($params['slug']); // don't need the exhibit slug
-
-        $transcriptTable = $this->_helper->db->getTable('Transcript');
-
-       
-        foreach($params as $slug) {
-            if(!empty($slug)) {
-                $exhibitPage = $transcriptTable->findBySlug($slug, $exhibit, $parentPage);
-                if($exhibitPage) {
-                    $parentPage = $exhibitPage;
-                } else {
-                    throw new Omeka_Controller_Exception_404;
-                }
-            }
-        }
-
-        fire_plugin_hook('show_transcript', array(
-            'transcript' => $transcript
-        ));
-
-        $this->view->assign(array(
-            'transcript' => $transcript
-        ));
-    }
 
     /**
      * Show the summary page for an exhibit.
@@ -464,14 +465,4 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         $this->view->index = (int) $this->_getParam('index');
     }
 
-    /**
-     * AJAX form for editing an attachment.
-     */
-    public function attachmentItemOptionsAction()
-    {
-        $attachment = new ExhibitBlockAttachment;
-        $attachment->item_id = $this->_getParam('item_id');
-        $attachment->file_id = $this->_getParam('file_id');
-        $this->view->attachment = $attachment;
-    }
 }

@@ -50,8 +50,8 @@ class ItemTranscriptPlugin extends Omeka_Plugin_AbstractPlugin
      * @var array Options and their default values.
      */
     protected $_options = array(
-        'item_relations_public_items_show' => null,
-        'item_relations_relation_format' => null
+       // 'item_relations_public_items_show' => null,
+       // 'item_relations_relation_format' => null
     );
     
 
@@ -66,27 +66,23 @@ class ItemTranscriptPlugin extends Omeka_Plugin_AbstractPlugin
         $db = $this->_db;
 
         $sql = "
-		   CREATE TABLE IF NOT EXISTS `{$db->prefix}transcripts` (
+		   CREATE TABLE IF NOT EXISTS `{$db->prefix}item_transcript_transcripts` (
 				`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 				`title` VARCHAR(255) DEFAULT NULL,
 				`description` TEXT,
-				`credits` TEXT,
+				`entry` TEXT,
 				`featured` TINYINT(1) DEFAULT 0,
 				`public` TINYINT(1) DEFAULT 0,
-				`theme` VARCHAR(30) DEFAULT NULL,
-				`theme_options` TEXT,
-				`slug` VARCHAR(30) NOT NULL,
 				`added` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
 				`modified` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
 				`owner_id` INT UNSIGNED DEFAULT NULL,
 				PRIMARY KEY  (`id`),
-				UNIQUE KEY `slug` (`slug`),
 				KEY `public` (`public`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
         $db->query($sql);
 
         $sql = "
-		   CREATE TABLE IF NOT EXISTS `{$db->prefix}transcript_entries` (
+		   CREATE TABLE IF NOT EXISTS `{$db->prefix}item_transcript_transcript_entries` (
 				`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 				`transcript_id` INT UNSIGNED NOT NULL,
 				`text` MEDIUMTEXT,
@@ -164,28 +160,7 @@ class ItemTranscriptPlugin extends Omeka_Plugin_AbstractPlugin
      */
    	public function hookUpgrade($args)
     {
-    //unimplemented
-    /*
-    	What changes between 1.0 and this version?
-    	
-    	name of relations table
-    */
-    /* code example from SimplePages plugin
-        $oldVersion = $args['old_version'];
-        $newVersion = $args['new_version'];
-        $db = $this->_db;
-         if ($oldVersion < '2.0') {
-         
-            $db->query("ALTER TABLE `$db->SimplePagesPage` DROP `add_to_public_nav`");
-            delete_option('simple_pages_home_page_id');
-            
-          	$sql = "ALTER TABLE `$db->SimplePagesPage` ADD INDEX ( `is_published` )";
-            $db->query($sql);    
-            
-        	$sql = "ALTER TABLE `$db->SimplePagesPage` ADD `parent_id` INT UNSIGNED NOT NULL ";
-            $db->query($sql);
-        */
-            
+        //unimplemented
     }
     
     
@@ -198,58 +173,6 @@ class ItemTranscriptPlugin extends Omeka_Plugin_AbstractPlugin
     }
 
 
-    /**
-     * Define the ACL.
-     * 
-     * @param Omeka_Acl
-     */
-    public function hookDefineAcl($args)
-    {
-    
-        $acl = $args['acl'];
-        
-        /* Just to explain for those unfamiliar with Zend ACL. indexResource represents the index page, the "landing page" for the plugin.
-        */
-        $indexResource = new Zend_Acl_Resource('ItemTranscript_Index');
-        $acl->add($indexResource);
-
-	/*
-        $acl->allow(array('super', 'admin'), array('ItemTranscript_Index', 'ItemTranscript_Relation'));
-        $acl->allow(null, 'ItemTranscript_Relation', 'show');
-        $acl->deny(null, 'ItemTranscript_Relation', 'show-unpublished');
-     */   
-    }
-       
-    
-    /**
-     * Filter the 'text' field of the simple-pages form, but only if the 
-     * 'simple_pages_filter_page_content' setting has been enabled from within the
-     * configuration form.
-     * 
-     * @param array $args Hook args, contains:
-     *  'request': Zend_Controller_Request_Http
-     *  'purifier': HTMLPurifier
-     */
-    public function hookHtmlPurifierFormSubmission($args)
-    {
-       // unimplemented
-    }
-    
-    
-    /**
-     * Display item relations on the public items show page.
-     */
-    public static function hookPublicAppendToItemsShow()
-    {
-        if ('1' == get_option('item_relations_public_items_show')) {
-            $item = get_current_record('item');
-            item_relations_display_relations($item);
-        }
-    }
-   
-
- 
-    
     /**
      * Add the Transcripts link to the admin main navigation.
      * 
@@ -267,100 +190,26 @@ class ItemTranscriptPlugin extends Omeka_Plugin_AbstractPlugin
         return $nav;
     }
     
-    
-    
-    
-    /**
-     * Insert a transcript.
-     * 
-     * @param 
-     * @param 
-     * @param 
-     * @return bool True: success; false: unsuccessful
-     */
-    public static function insertItemTranscript($transcript) {
-
-        // Only numeric property IDs are valid.
-        if (!is_numeric($propertyId)) {
-            return false;
-        }
-        
-        // Set the subject item.
-        if (!($subjectItem instanceOf Item)) {
-            $subjectItem = get_db()->getTable('Item')->find($subjectItem);
-        }
-        
-        // Set the object item.
-        if (!($objectItem instanceOf Item)) {
-            $objectItem = get_db()->getTable('Item')->find($objectItem);
-        }
-        
-        // Don't save the relation if the subject or object items don't exist.
-        if (!$subjectItem || !$objectItem) {
-            return false;
-        }
-        
-        $itemTranscript = new ItemTranscript;
-        $itemTranscript->subject_item_id = $subjectItem->id;
-        $itemTranscript->property_id = $propertyId;
-        $itemTranscript->object_item_id = $objectItem->id;
-        $itemTranscript->save();
-        
-        return true;
-    }
-    
 
     /**
-     * Prepare special variables before saving the form.
-     */
-    protected function beforeSave($args) {
-    }
-    
-
-   /**
-     * Save the item relations after saving an item add/edit form.
+     * Define the ACL.
      * 
-     * @param Omeka_Record $record
-     * @param array $post
+     * @param Omeka_Acl
      */
-    public function hookAfterSaveItem($args)
+    public function hookDefineAcl($args)
     {
-    //debug("IN hookAfterSaveItem()");
-
-    	$record = $args['record'];
-    	$post = $args['post'];
-    
-        $db = get_db();
+        $acl = $args['acl'];
         
-        if (!($record instanceof Item)) {
-            return;
-        }
-        
-        // Save item relations.
-        foreach ($post['item_relations_property_id'] as $key => $propertyId) {
-            
-            $insertedItemRelation = self::insertItemRelation(
-                $record, 
-                $propertyId, 
-                $post['item_relations_item_relation_object_item_id'][$key]
-            );
-            if (!$insertedItemRelation) {
-                continue;
-            }
-        }
-        
-        // Delete item relations.
-        if (isset($post['item_relations_item_relation_delete'])) {
-            foreach ($post['item_relations_item_relation_delete'] as $itemRelationId) {
-                $itemRelation = $db->getTable('ItemRelationsRelation')->find($itemRelationId);
-                // When an item is related to itself, deleting both relations 
-                // simultaniously will result in an error. Prevent this by 
-                // checking if the item relation exists prior to deletion.
-                if ($itemRelation) {
-                    $itemRelation->delete();
-                }
-            }
-        }
+        /* Just to explain for those unfamiliar with Zend ACL. indexResource represents the index page, the "landing page" for the plugin.
+        */
+        $indexResource = new Zend_Acl_Resource('ItemTranscript_Index');
+        $acl->add($indexResource);
+		$tResource = new Zend_Acl_Resource('ItemTranscript_Transcripts');
+        $acl->add($tResource);
+	
+        //$acl->allow(array('super', 'admin'), array('ItemTranscript_Index', 'ItemTranscript_Transcripts'));
+        //$acl->allow(null, 'ItemTranscript_Transcripts', 'show');
+        //$acl->deny(null, 'ItemTranscript_Transcripts', 'show-unpublished');
     }
 
  

@@ -6,17 +6,6 @@
  */
  
  
- /* Notes:
- 
- Declaring 
- class Table_Transcript extends Omeka_Db_Table
-
-causes a table 'transcripts' to be created on plugin install from the inflected (pluralized) name of the second part of the class name. I think.
-
-I suppose applySearchFilters() is automatically called at some point by the framework. Can't we mark all these magic functions some way?
-
- */
-
 /**
  * Transcript table class.
  *
@@ -30,6 +19,7 @@ class Table_Transcript extends Omeka_Db_Table
 	 */
     public function applySearchFilters($select, $params)
     {
+    /*
         if(array_key_exists('public', $params)) {
             $this->filterByPublic($select, $params['public']);
         }
@@ -37,6 +27,7 @@ class Table_Transcript extends Omeka_Db_Table
         if(array_key_exists('featured', $params)) {
             $this->filterByFeatured($select, $params['featured']);
         }
+        */
     }
     
 
@@ -49,6 +40,7 @@ class Table_Transcript extends Omeka_Db_Table
      */
     public function filterByPublic($select, $isPublic)
     {         
+    /*
         $isPublic = (bool) $isPublic; // this makes sure that empty strings and unset parameters are false
 
         //Force a preview of the public collections
@@ -57,6 +49,7 @@ class Table_Transcript extends Omeka_Db_Table
         } else {
             $select->where('transcripts.public = 0');
         }
+        */
     }
     
     /**
@@ -68,6 +61,7 @@ class Table_Transcript extends Omeka_Db_Table
      */
     public function filterByFeatured($select, $isFeatured)
     {
+    /*
         $isFeatured = (bool) $isFeatured; // this make sure that empty strings and unset parameters are false
         
         //filter items based on featured (only value of 'true' will return featured collections)
@@ -75,37 +69,28 @@ class Table_Transcript extends Omeka_Db_Table
             $select->where('transcripts.featured = 1');
         } else {
             $select->where('transcripts.featured = 0');
-        }     
+        }   
+        */  
     }
     
     
-    
     /**
-     * Use SQL-based low-level permissions checking for exhibit queries.
+     * Use SQL-based low-level permissions checking for transcript queries.
      *
      * @return Omeka_Db_Select
      */
-    /**
-     * Apply permissions checks to all SQL statements retrieving collections from the table
-     * 
-     * @param string
-     * @return void
-     */
+
     public function getSelect()
     {
     
-    /*
-        $select = parent::getSelect();
-        $permissions = new Omeka_Db_Select_PublicPermissions('ItemTranscript_Transcripts');
-        $permissions->apply($select, 'transcripts');
-    */
-    
-        /*
+       /*
         $select = parent::getSelect();
         $permissions = new Omeka_Db_Select_PublicPermissions('Collections');
         $permissions->apply($select, 'collections');
         */
-        
+		$select = parent::getSelect();
+        //$permissions = new Omeka_Db_Select_PublicPermissions('ItemTranscript_Transcripts');
+        //$permissions->apply($select, 'transcripts');    
         return $select;
     }
     

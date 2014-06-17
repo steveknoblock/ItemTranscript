@@ -7,10 +7,11 @@
 
 
 /**
- * The ItemTranscript record class.
+ * The Transcript record class.
  *
  * @package ItemTranscript
  */
+
 class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Resource_Interface */
 {
     /**
@@ -28,11 +29,11 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
     public $description;
 
     /**
-     * Transcript credits.
+     * Transcript entry.
      *
      * @var string
      */
-    public $credits;
+    public $entry;
     
     /**
      * Whether the transcript is featured.
@@ -73,14 +74,13 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
     /**
      * Initialize the mixins.
      */
-    protected function _initializeMixins()
-    {
+    protected function _initializeMixins() {
     /*
         $this->_mixins[] = new Mixin_Tag($this);
         $this->_mixins[] = new Mixin_Owner($this);
+    */
         $this->_mixins[] = new Mixin_PublicFeatured($this);
         $this->_mixins[] = new Mixin_Timestamp($this);
-    */
         $this->_mixins[] = new Mixin_ElementText($this);
         $this->_mixins[] = new Mixin_Search($this);
     }
@@ -95,18 +95,14 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
      */
     protected function beforeSave($args)
     {
+    	debug('Transcript::beforeSave');
         if ($args['post']) {
             $post = $args['post'];
             
             $this->beforeSaveElements($post);
-            
-            if (!empty($post['change_type'])) {
-                return false;
-            }
         }
     }
     
-
     
     /**
      * After-save ActiveRecord callback.
@@ -117,45 +113,22 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
      */
     protected function afterSave($args)
     {
-        if (!$this->public) {
-            $this->setSearchTextPrivate();
-        }
-        $this->setSearchTextTitle($this->title);
-        $this->addSearchText($this->title);
-        $this->addSearchText($this->description);
-        
-        if ($args['post']) {
+    	debug('Transcript::afterSave');
+    	if(!$this->public) {
+    		$this->setSearchTextPrivate();
+    	}
+    	
+    	$this->setSearchTextTitle($this->title);
+    	$this->addSearchText($this->title);
+    	$this->addSearchText($this->description);
 
-            $post = $args['post'];
-            
-            //Add the tags after the form has been saved
-            /* only if tag support needed
-            $this->applyTagString($post['tags']);
-            if (isset($post['pages-hidden'])) {
-                parse_str($post['pages-hidden'], $pageData);
-                $this->_savePages($pageData['page']);
-            }
-			*/
-			
-			/* only retain this if necessary to delete transcript entries marked delete in the admin interface */
-            if (isset($post['pages-delete-hidden'])) {
-                $pagesToDelete = explode(',', $post['pages-delete-hidden']);
-                foreach ($pagesToDelete as $id) {
-                    $page = $this->getTable('TranscriptPage')->find($id);
-                    if ($page) {
-                        $page->delete();
-                    }
-                }
-            }
-            */
-        }
     }
     
     /**
      * Validation callback.
      */
-    protected function _validate()
-    {
+    protected function _validate() {
+    	debug('_validate()');
         if (!strlen((string)$this->title)) {
             $this->addError('title', __('An transcript must be given a title.'));
         }
@@ -171,8 +144,7 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
      *
      * Delete all assigned pages when the transcript is deleted.
      */
-    protected function _delete()
-    {
+    protected function _delete() {
         //get all the pages and delete them
         $pages = $this->getTable('Transcript')->findBy(array('transcript'=>$this->id));
         foreach($pages as $page) {
@@ -180,7 +152,6 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
         }
         $this->deleteTaggings();
     }
-
 
 
     /**
