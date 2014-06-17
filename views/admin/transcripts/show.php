@@ -9,9 +9,10 @@ print '<pre>';
 print_r($this->transcript);
 print '</pre>';
 */
-echo metadata('transcript', 'title');
-//echo metadata('transcript', 'description');
-//echo metadata('transcript', 'entry');
 ?>
+
+<div>Title: <?php echo metadata('transcript', 'title'); ?></div>
+<div>Description: <?php echo metadata('transcript', 'description'); ?></div>
+<div><pre><?php echo metadata('transcript', 'entry'); ?></pre></div>
 
 <?php echo foot(); ?>
