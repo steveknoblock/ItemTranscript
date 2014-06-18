@@ -5,8 +5,6 @@
  * @package ItemTranscript
  */
 
-debug('path: '.dirname(__FILE__));
-//path: /usr/home/folks/public_html/folks.pairserver.com/omeka/omeka-2.1.4-clean/plugins/ItemTranscript/controllers
 require_once dirname(__FILE__) . '../../helpers/TranscriptParse.php';
 
 /**
@@ -64,7 +62,10 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
     public function editAction()
     {
 	    debug('editAction');
-        throw new Omeka_Controller_Exception_404;
+        $transcript = $this->_helper->db->findById();
+        $this->view->form = $this->_getForm($transcript);
+        $this->_processTranscriptForm($transcript, 'edit');
+	    //$this->render('transcript-form');
     }
 
 	
@@ -77,7 +78,10 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
 		$transcript->setPostData($_POST);
         if ($transcript->save()) {
             if ('add' == $mode) {
-                $this->_helper->flashMessenger(__('The transcript "%s" has been added.', $transcript->title), 'success');
+                $this->_helper->flashMessenger(__('The new transcript "%s" has been saved.', $transcript->title), 'success');
+            }
+        if ('edit' == $mode) {
+                $this->_helper->flashMessenger(__('The edited transcript "%s" has been saved.', $transcript->title), 'success');
             }        
 		}
 	}            
@@ -227,24 +231,6 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         }
     }
 
-
-
-    /**
-     * Find an exhibit by its slug.
-     *
-     * @param string|null $exhibitSlug The slug to look up. If null, look up
-     *  the slug from the current request.
-     * @return Exhibit
-     */
-    protected function _findByExhibitSlug($exhibitSlug = null)
-    {
-        if (!$exhibitSlug) {
-            $exhibitSlug = $this->_getParam('slug');
-        }
-        $exhibit = $this->_helper->db->getTable()->findBySlug($exhibitSlug);
-        return $exhibit;
-    }
-
     /**
      * List tags for exhibits action.
      */
@@ -296,70 +282,6 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
     {
         $this->_redirectAfterAdd($exhibit);
     }
-
-    /**
-     * Theme configuration page for an exhibit.
-     */
-    public function themeConfigAction()
-    {
-        $exhibit = $this->_helper->db->findById();
-        $themeName = (string)$exhibit->theme;
-
-        // Abort if no specific theme is selected.
-        if ($themeName == '') {
-            $this->_helper->flashMessenger(__('You must specifically select a theme in order to configure it.'), 'error');
-            $this->_helper->redirector->gotoRoute(array('action' => 'edit', 'id' => $exhibit->id), 'exhibitStandard');
-            return;
-        }
-
-        $theme = Theme::getTheme($themeName);
-        $previousOptions = $exhibit->getThemeOptions();
-
-        $form = new Omeka_Form_ThemeConfiguration(array(
-            'themeName' => $themeName,
-            'themeOptions' => $previousOptions
-        ));
-        $form->removeDecorator('Form');
-
-        $themeConfigIni = $theme->path . DIRECTORY_SEPARATOR . 'config.ini';
-
-        if (file_exists($themeConfigIni) && is_readable($themeConfigIni)) {
-
-            try {
-                $pluginsIni = new Zend_Config_Ini($themeConfigIni, 'plugins');
-                $excludeFields = $pluginsIni->exclude_fields;
-                $excludeFields = explode(',', $excludeFields);
-
-            } catch(Exception $e) {
-                $excludeFields = array();
-            }
-
-            foreach ($excludeFields as $excludeField) {
-                trim($excludeField);
-                $form->removeElement($excludeField);
-            }
-        }
-
-        // process the form if posted
-        if ($this->getRequest()->isPost()) {
-            $configHelper = new Omeka_Controller_Action_Helper_ThemeConfiguration;
-
-            if (($newOptions = $configHelper->processForm($form, $_POST, $previousOptions))) {
-                $exhibit->setThemeOptions($newOptions);
-                $exhibit->save();
-
-                $this->_helper->_flashMessenger(__('The theme settings were successfully saved!'), 'success');
-                $this->_helper->redirector->gotoRoute(array('action' => 'edit', 'id' => $exhibit->id), 'exhibitStandard');
-            } else {
-                $this->_helper->_flashMessenger(__('There was an error on the form. Please try again.'), 'error');
-            }
-        }
-
-        $this->view->assign(compact('exhibit', 'form', 'theme'));
-    }
-
-
-
 
 
     /**
