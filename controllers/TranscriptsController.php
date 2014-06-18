@@ -5,6 +5,9 @@
  * @package ItemTranscript
  */
 
+debug('path: '.dirname(__FILE__));
+//path: /usr/home/folks/public_html/folks.pairserver.com/omeka/omeka-2.1.4-clean/plugins/ItemTranscript/controllers
+require_once dirname(__FILE__) . '../../helpers/TranscriptParse.php';
 
 /**
  * Controller for Transcripts. 
@@ -195,7 +198,6 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
             throw new Omeka_Controller_Exception_403;
         }
         */
-        
 		$this->view->transcript = $transcript;
 		debug('About to render view');
 		$this->render('show');
