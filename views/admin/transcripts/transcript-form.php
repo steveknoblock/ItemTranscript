@@ -2,6 +2,7 @@
     $title = __('Add Transcript');
     echo head(array('title' => html_escape($title), 'bodyclass' => 'transcript'));
 ?>
+
 <?php echo flash(); ?>
 <?php echo $this->form; ?>
 <?php echo foot(); ?>

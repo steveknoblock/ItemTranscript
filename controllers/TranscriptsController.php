@@ -59,6 +59,15 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
     /**
      * Edit action.
      */
+     
+     /**
+      * Note: The Omeka callback function editAction()
+      * assumes a view file 'edit.php' exists under the
+      * views directory. This explains why the view is
+      * not explicity rendered using $this->render()
+      * The edit view is automatically created and rendered
+      * on editAction().
+      */
     public function editAction()
     {
 	    debug('editAction');
@@ -75,6 +84,8 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
 	protected function _processTranscriptForm($transcript, $mode)
 	{
 		debug('Processing transcript form');
+		// don't display messages or save if not POST mode request
+	if ($this->getRequest()->isPost()) {
 		$transcript->setPostData($_POST);
         if ($transcript->save()) {
             if ('add' == $mode) {
@@ -84,6 +95,7 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
                 $this->_helper->flashMessenger(__('The edited transcript "%s" has been saved.', $transcript->title), 'success');
             }        
 		}
+	 }
 	}            
 
 
@@ -143,6 +155,11 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
 	}
 
 
+
+    protected function _getDeleteSuccessMessage($record)
+    {
+        return __('The page "%s" has been deleted.', $record->title);
+    }
 
 
     /**
@@ -211,12 +228,6 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
     }
     
     
-/****/
-
-
-
-    
-
     /**
      * Use global settings for determining browse page limits.
      *
@@ -236,157 +247,10 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
      */
     public function tagsAction()
     {
-        $params = array_merge($this->_getAllParams(), array('type'=>'Exhibit'));
+        $params = array_merge($this->_getAllParams(), array('type'=>'Transcript'));
         $tags = $this->_helper->db->getTable('Tag')->findBy($params);
         $this->view->assign(compact('tags'));
     }
 
-
-    /**
-     * Show the summary page for an exhibit.
-     */
-    public function summaryAction()
-    {
-        $exhibit = $this->_findByExhibitSlug();
-        if (!$exhibit) {
-            throw new Omeka_Controller_Exception_404;
-        }
-
-        fire_plugin_hook('show_exhibit', array('exhibit' => $exhibit));
-        $this->view->exhibit = $exhibit;
-    }
-
-    /**
-     * Custom redirect for addAction allowing a page to be added immediately.
-     *
-     * @param Exhibit $exhibit
-     */
-    protected function _redirectAfterAdd($exhibit)
-    {
-        if (array_key_exists('add_page', $_POST)) {
-            $this->_helper->redirector->gotoRoute(array('action' => 'add-page', 'id' => $exhibit->id), 'exhibitStandard');
-        } else if (array_key_exists('configure-theme', $_POST)) {
-            $this->_helper->redirector->gotoRoute(array('action' => 'theme-config', 'id' => $exhibit->id), 'exhibitStandard');
-        } else {
-            $this->_helper->redirector->gotoRoute(array('action' => 'edit', 'id' => $exhibit->id), 'exhibitStandard');
-        }
-    }
-
-    /**
-     * Custom redirect for editAction.
-     *
-     * @see _redirectAfterAdd
-     * @param Exhibit $exhibit
-     */
-    protected function _redirectAfterEdit($exhibit)
-    {
-        $this->_redirectAfterAdd($exhibit);
-    }
-
-
-    /**
-     * Edit an existing exhibit page.
-     */
-    public function editPageAction()
-    {
-        $exhibitPage = $this->_helper->db->findById(null,'ExhibitPage');
-
-        $exhibit = $exhibitPage->getExhibit();
-
-        if (!$this->_helper->acl->isAllowed('edit', $exhibit)) {
-            throw new Omeka_Controller_Exception_403;
-        }
-
-        $success = $this->processPageForm($exhibitPage, 'Edit', $exhibit);
-        if ($success) {
-            $this->_helper->flashMessenger("Changes to the exhibit's page were successfully saved!", 'success');
-            if (array_key_exists('add-another-page', $_POST)) {
-                $this->_helper->redirector->gotoRoute(array('action' => 'add-page', 'id' => $exhibit->id, 'previous' => $exhibitPage->id), 'exhibitStandard');
-            } else {
-                $this->_helper->redirector->gotoRoute(array('action' => 'edit-page', 'id' => $exhibitPage->id), 'exhibitStandard');
-            }
-            return;
-        }
-
-        $this->render('page-form');
-    }
-
-
-
-    /**
-     * Delete an exhibit page.
-     */
-    public function deletePageAction()
-    {
-        $exhibitPage = $this->_helper->db->findById(null,'ExhibitPage');
-        $exhibit = $exhibitPage->getExhibit();
-        if (!$this->_helper->acl->isAllowed('delete', $exhibit)) {
-            throw new Omeka_Controller_Exception_403;
-        }
-
-        $exhibitPage->delete();
-        $this->_helper->redirector->gotoUrl('exhibits/edit/' . $exhibit->id );
-    }
-
-    /**
-     * AJAX action for checking exhibit page data.
-     */
-    public function validatePageAction()
-    {
-        try {
-            $exhibitPage = $this->_helper->db->findById(null,'ExhibitPage');
-        } catch (Exception $e) {
-            $exhibitPage = new ExhibitPage;
-            if (($exhibit_id = $this->getParam('exhibit_id'))) {
-                $exhibitPage->exhibit_id = $exhibit_id;
-            }
-            if (($parent_id = $this->getParam('parent_id'))) {
-                $exhibitPage->parent_id = $parent_id;
-            }
-        }
-
-        $exhibitPage->setPostData($_POST);
-        $exhibitPage->validateSlug();
-        if ($exhibitPage->isValid()) {
-            $data = array('success' => true);
-        } else {
-            $data = array(
-                'success' => false,
-                'messages' => $exhibitPage->getErrors()->get()
-            );
-        }
-
-        $this->_helper->json($data);
-    }
-
-    /**
-     * AJAX/partial form for a single block in an page.
-     */
-    public function blockFormAction()
-    {
-        $block = new ExhibitPageBlock;
-        $block->layout = $this->getParam('layout');
-        $block->order = $this->getParam('order');
-
-        $this->view->block = $block;
-    }
-
-    /**
-     * AJAX/partial form for a single attachment on a block.
-     */
-    public function attachmentAction()
-    {
-        $attachment = new ExhibitBlockAttachment;
-        $attachment->item_id = $this->_getParam('item_id');
-        $attachment->file_id = $this->_getParam('file_id');
-        $attachment->caption = $this->_getParam('caption');
-
-        $block = new ExhibitPageBlock;
-        $block->order = $this->_getParam('block_index');
-
-        $this->view->attachment = $attachment;
-        $this->view->block = $block;
-        $this->view->index = (int) $this->_getParam('index');
-    }
 
 }

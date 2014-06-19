@@ -50,8 +50,8 @@ class ItemTranscriptPlugin extends Omeka_Plugin_AbstractPlugin
      * @var array Options and their default values.
      */
     protected $_options = array(
-       // 'item_relations_public_items_show' => null,
-       // 'item_relations_relation_format' => null
+       // 'item_transcript_public_items_show' => null,
+       // 'item_transcript_transcription_format' => null
     );
     
 
@@ -183,7 +183,7 @@ class ItemTranscriptPlugin extends Omeka_Plugin_AbstractPlugin
     {
         $nav[] = array(
             'label' => __('Transcripts'),
-            'uri' => url('transcripts') /*,
+            'uri' => url('item-transcript/transcripts') /*,
             'resource' => 'ItemRelations_Index',
             'privilege' => 'index' */
         );
