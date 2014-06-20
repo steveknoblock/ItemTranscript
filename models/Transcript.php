@@ -153,6 +153,20 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
         $this->deleteTaggings();
     }
 
+	/**
+	 * Override getRecordUrl to take control over what URL 
+	 * is returned for this record in a given context.
+	 */
+
+	public function getRecordUrl($action = 'show')
+	{
+		return array(
+			'module' => 'item-transcript',
+			'controller' => 'transcripts',
+			'action' => $action,
+			'id' => $this->id
+		);
+	}
 
     /**
      * Required by Zend_Acl_Resource_Interface.

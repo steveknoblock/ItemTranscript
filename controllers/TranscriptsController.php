@@ -46,6 +46,8 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
 		if ($this->getRequest()->isPost()) {
 			debug('Processing request');
 			$this->_processTranscriptForm($transcript, 'add');
+			// Go to browse.
+        	$this->_helper->redirector('browse');
 		} else {
 			debug('Getting form');
 			$tmp = $this->_getForm($transcript);
@@ -73,6 +75,8 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
 	    debug('editAction');
         $transcript = $this->_helper->db->findById();
         $this->view->form = $this->_getForm($transcript);
+        $this->view->id = $transcript->id;
+        $this->view->title = $transcript->title; // I shouldn't need to do this ?
         $this->_processTranscriptForm($transcript, 'edit');
 	    //$this->render('transcript-form');
     }

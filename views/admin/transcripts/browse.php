@@ -4,11 +4,11 @@ echo head(array('title'=>$title, 'bodyclass'=>'transcripts'));
 ?>
     
 <?php if (!count($transcripts)): ?> 
-    <div id="no-exhibits">
+    <div id="no-transcripts">
     <h2><?php echo __('There are no transcripts yet.'); ?></h2>
     
     <?php if (is_allowed('ItemTranscript_Transcripts','add')): ?>
-        <a href="<?php echo html_escape(url('item_transcript/transcripts/add')); ?>" class="big green add button"><?php echo __('Add a Transcript'); ?></a></p>
+        <a href="<?php echo html_escape(url('item-transcript/transcripts/add')); ?>" class="big green add button"><?php echo __('Add a Transcript'); ?></a></p>
     <?php endif; ?>
     </div>
     
@@ -16,7 +16,7 @@ echo head(array('title'=>$title, 'bodyclass'=>'transcripts'));
 
 <?php if (is_allowed('ItemTranscript_Transcripts', 'add')): ?>
 <div class="table-actions">
-    <a href="<?php echo html_escape(url('item_transcript/transcripts/add')); ?>" class="small green add button"><?php echo __('Add a Transcript'); ?></a>
+    <a href="<?php echo html_escape(url('item-transcript/transcripts/add')); ?>" class="small green add button"><?php echo __('Add a Transcript'); ?></a>
 </div>
 <?php endif; ?>
 
@@ -34,15 +34,27 @@ echo head(array('title'=>$title, 'bodyclass'=>'transcripts'));
     <tbody>
         
 <?php foreach($transcripts as $key=>$transcript): ?>
-    <tr class="exhibit<?php if ($key % 2 == 1) echo ' even'; else echo ' odd'; ?>">
-        <td class="exhibit-info<?php if ($transcript->featured) echo ' featured'; ?>">
+    <tr class="transcript<?php if ($key % 2 == 1) echo ' even'; else echo ' odd'; ?>">
+        <td class="transcript-info<?php if ($transcript->featured) echo ' featured'; ?>">
             <span>
-            <?php echo link_to_item('foo',array('class'=>'bar'),'item-transcript/transcript/show',$transcript); ?>">
-           
+          		<a class="edit" href="<?php echo html_escape(record_url($transcript, 'show')); ?>">
+					<?php echo html_escape($transcript->title); ?>
+				</a>
+				
+				
             <?php if(!$transcript->public): ?>
                 <?php echo __('(Private)'); ?>
             <?php endif; ?>
             </span>
+            
+            <ul class="action-links group">
+				<li><a class="edit" href="<?php echo html_escape(record_url($transcript, 'edit')); ?>">
+					<?php echo __('Edit'); ?>
+				</a></li>
+				<li><a class="delete-confirm" href="<?php echo html_escape(record_url($transcript, 'delete-confirm')); ?>">
+					<?php echo __('Delete'); ?>
+				</a></li>
+			</ul>
             
         </td>
         <td><?php echo metadata($transcript, 'description'); ?></td>

@@ -1,6 +1,10 @@
 <?php
-    $title = __('Edit Transcript');
-    echo head(array('title' => html_escape($title), 'bodyclass' => 'transcript'));
+
+$head = array('bodyclass' => 'simple-pages primary', 
+              'title' => __('Editing Transcript "%s"', '#'. $this->id .' '.$this->title)
+              );
+echo head($head);
+
 ?>
 <?php echo flash(); ?>
 <?php echo $this->form; ?>
