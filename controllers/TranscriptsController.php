@@ -7,6 +7,7 @@
 
 require_once dirname(__FILE__) . '../../helpers/TranscriptParse.php';
 
+
 /**
  * Controller for Transcripts. 
  *
@@ -50,10 +51,13 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         	$this->_helper->redirector('browse');
 		} else {
 			debug('Getting form');
-			$tmp = $this->_getForm($transcript);
+			// Omeka_Form_Admin is too simple to handle the item data
+			//$tmp = $this->_getForm($transcript);
 			debug('Displaying form');
-			$this->view->form = $tmp;
-			$this->render('transcript-form');
+			//$this->view->form = $tmp;
+			//$this->render('transcript-form');
+			
+			$this->render('add');
 		}
 	}
 
@@ -74,33 +78,54 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
     {
 	    debug('editAction');
         $transcript = $this->_helper->db->findById();
-        $this->view->form = $this->_getForm($transcript);
-        $this->view->id = $transcript->id;
-        $this->view->title = $transcript->title; // I shouldn't need to do this ?
+        //$this->view->form = $this->_getForm($transcript);
+       // $this->view->id = $transcript->id;
+        //$this->view->title = $transcript->title; // I shouldn't need to do this ?
+        
+        //$transcript_id = $transcript->id;
+        
+       // $transcript->notes = $this->item_transcript_notes_list();
+        
+        //$this->view->description = $transcript->title;
+        //$this->view->entry = $transcript->entry;
+        
+        // okay, model objects must be injected explicity into view
+        // $this->view->exhibit = $exhibit;
+           $this->view->transcript = $transcript;
+        //var_dump( $transcript );
+    
+        
         $this->_processTranscriptForm($transcript, 'edit');
 	    //$this->render('transcript-form');
     }
 
 	
-	/**
+ 	/**
 	 * Process the form submission for add or edit actions.
 	 */
 	protected function _processTranscriptForm($transcript, $mode)
 	{
 		debug('Processing transcript form');
 		// don't display messages or save if not POST mode request
-	if ($this->getRequest()->isPost()) {
-		$transcript->setPostData($_POST);
-        if ($transcript->save()) {
-            if ('add' == $mode) {
-                $this->_helper->flashMessenger(__('The new transcript "%s" has been saved.', $transcript->title), 'success');
-            }
-        if ('edit' == $mode) {
-                $this->_helper->flashMessenger(__('The edited transcript "%s" has been saved.', $transcript->title), 'success');
-            }        
-		}
-	 }
-	}            
+		if ($this->getRequest()->isPost()) {
+			debug('is POST request');
+			try {
+			$transcript->setPostData($_POST);
+			if ($transcript->save()) {
+				if ('add' == $mode) {
+					$this->_helper->flashMessenger(__('The new transcript "%s" has been saved.', $transcript->title), 'success');
+				} else if ('edit' == $mode) {
+					$this->_helper->flashMessenger(__('The edited transcript "%s" has been saved.', $transcript->title), 'success');
+				}
+				debug('redirecting to browse');
+				$this->_helper->redirector('browse');       
+			}
+			// Catch validation errors.
+				} catch (Omeka_Validate_Exception $e) {
+					$this->_helper->flashMessenger($e);
+				}
+		 }
+	}           
 
 
 	/**
@@ -154,15 +179,35 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
             )
         );
         
+         $form->addElementToSaveGroup(
+            'checkbox', 'public',
+            array(
+                'id' => 'item-transcript-is-published',
+                'values' => array(1, 0),
+                'checked' => $transcript->public,
+                'label' => __('Publish this transcript?'),
+                'description' => __('Checking this box will make the transcript public')
+            )
+        );
+
+         $form->addElementToSaveGroup(
+            'checkbox', 'featured',
+            array(
+                'id' => 'item-transcript-is-featured',
+                'values' => array(1, 0),
+                'checked' => $transcript->featured,
+                'label' => __('Feature this transcript?'),
+                'description' => __('Checking this box will make the transcript featured')
+            )
+        );
 	 	return $form;
 	
 	}
 
-
-
+                     //_getDeleteSuccessMessage() override
     protected function _getDeleteSuccessMessage($record)
     {
-        return __('The page "%s" has been deleted.', $record->title);
+        return __('The transcript "%s" has been deleted.', $record->title);
     }
 
 
@@ -223,6 +268,10 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
             throw new Omeka_Controller_Exception_403;
         }
         */
+        
+        $transcript_notes = findByTranscript($transcript);
+        
+        
 		$this->view->transcript = $transcript;
 		debug('About to render view');
 		$this->render('show');
@@ -256,5 +305,36 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         $this->view->assign(compact('tags'));
     }
 
+
+/**** RELATED, DEPENDENT ITEMS ****/
+
+	/**
+	 * List the notes for a transcript.
+	 *
+	 * @param 
+	 * @return string
+	 */
+	function item_transcript_notes_list()
+	{
+	
+		$this->findByTranscript($transcript)
+	
+		foreach ($transcript->notes as $note) {
+			$html .= '<br>'. $note->text;
+			}
+			/*
+		$noteId = html_escape($transcript_note->id);
+		$html = '<li class="page" id="page_' . $noteId . '">'
+			  . '<div class="sortable-item">'
+			  . '<a href="../edit-page/' . $noteId . '">' . html_escape($transcript->title) . '</a>'
+			  . '<a class="delete-toggle delete-element" href="#">' . __('Delete') . '</a>'
+			  . '</div>';
+			$html .= '</ul>';
+		}
+		$html .= '</li>';
+		*/
+		
+		return $html;
+	}
 
 }

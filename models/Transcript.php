@@ -34,6 +34,13 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
      * @var string
      */
     public $entry;
+
+    /**
+     * Transcript notes.
+     *
+     * @var array
+     */
+    public $notes;
     
     /**
      * Whether the transcript is featured.
@@ -129,14 +136,15 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
      */
     protected function _validate() {
     	debug('_validate()');
+    	/*
         if (!strlen((string)$this->title)) {
-            $this->addError('title', __('An transcript must be given a title.'));
+            $this->addError('title', __('A transcript must be given a title.'));
         }
 
         if (strlen((string)$this->title) > 255) {
             $this->addError('title', __('The title for an transcript must be 255 characters or less.'));
         }
-
+		*/
     }
 
     /**
@@ -145,14 +153,63 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
      * Delete all assigned pages when the transcript is deleted.
      */
     protected function _delete() {
-        //get all the pages and delete them
-        $pages = $this->getTable('Transcript')->findBy(array('transcript'=>$this->id));
-        foreach($pages as $page) {
-            $transcript->delete();
+        /*
+        Will need this in future to delete notes associated with transcript.
+        $notes = $this->getTable('TranscriptNotes')->findBy(array('transcript_notes'=>$this->id));
+        foreach($notes as $note) {
+            $note->delete();
         }
-        $this->deleteTaggings();
+        */
+        //$this->deleteTaggings();
     }
 
+
+
+    /**
+     * Get all notes for this transcript.
+     *
+     * @return TranscriptNote array
+     */
+    public function getTranscriptNotes()
+    {
+        return $this->getTable('TranscriptNote')->findByNote($this);
+    }
+
+
+
+// not objects yet, notes are database rows, they must be instantiated as objects so they can be assigned as a collection of objects to this transcript
+
+    /**
+     * Set data for this transcript's notes.
+     *
+     * @param array $notesData An array of key-value arrays for each block.
+     * @param boolean $deleteExtras Whether to delete any extra preexisting
+     *  blocks.
+     */ 
+    public function setTranscriptNotes($notesData, $deleteExtras = true)
+    {
+        $existingNotes = $this->getTranscriptNotes();
+        foreach ($notesData as $i => $noteData) {
+            if (!empty($existingNotes)) {
+                $note = array_pop($existingNotes);
+            } else {
+                $note = new TranscriptNote;
+                $note->transcript_id = $this->id;
+            }
+            $note->order = $i;
+            $note->setData($noteData);
+            $note->save();
+        }
+        // Any leftover blocks beyond the new data get erased.
+        if ($deleteExtras) {
+            foreach ($existingBlocks as $extraBlock) {
+                $extraBlock->delete();
+            }
+        }
+    }
+    
+    
+    
 	/**
 	 * Override getRecordUrl to take control over what URL 
 	 * is returned for this record in a given context.

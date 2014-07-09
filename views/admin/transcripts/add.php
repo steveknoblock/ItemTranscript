@@ -1,49 +1,62 @@
 <?php
     $title = __('Add Transcript');
-    echo head(array('title' => html_escape($title), 'bodyclass' => 'exhibits'));
+    echo head(array('title' => html_escape($title), 'bodyclass' => 'transcript'));
 ?>
 <?php echo flash(); ?>
-<form id="transcript-metadata-form" method="post" class="transcript-builder">
-    <section class="seven columns alpha">
+<form enctype="application/x-www-form-urlencoded" action="" method="post">
+<section class="seven columns alpha">
+	<div class="field">
+		<div id="item-transcript-title-label" class="two columns alpha"><label for="item-transcript-title" class="required">Title</label></div>
+	<div class="inputs five columns omega">
+	<p class="explanation">Name of transcript (required)</p>
+	<input type="text" name="title" id="item-transcript-title" value="">
+	</div></div>
+	<div class="field"><div id="item-transcript-description-label" class="two columns alpha"><label for="item-transcript-description" class="optional">Description</label></div>
+		<div class="inputs five columns omega">
+		<p class="explanation">Description of transcript</p>
+		<textarea name="description" id="item-transcript-description" cols="50" rows="7"></textarea>
+		</div>
+	</div>
+	<div class="field"><div id="item-transcript-entry-label" class="two columns alpha"><label for="item-transcript-entry" class="optional">Transcript Entry</label>
+	</div>
+	<div class="inputs five columns omega">
+<p class="explanation">Add transcript text (using SpeakUp!) markup</p>
+<textarea name="entry" id="item-transcript-entry" cols="50" rows="7"></textarea>
+</div>
+</div>
+</section>
+
+<section class="seven columns">
     <fieldset>
-        <legend><?php echo __('Transcript Metadata'); ?></legend>
-        <div class="field">
-            <div class="two columns alpha">
-                <?php echo $this->formLabel('title', __('Title')); ?>
-            </div>
-            <div class="five columns omega inputs">
-                <?php echo $this->formText('title', $this->title); ?>
-            </div>
+        <legend><?php echo __('Notes'); ?></legend>
+        <div id="notes-list-container">
+            <?php if (!$transcript->notes): ?>
+                <p><?php echo __('There are no notes.'); ?></p>
+            <?php else: ?>
+                <p id="reorder-instructions"><?php echo __('To reorder notes, click and drag the page up or down to the preferred location.'); ?></p>
+                <?php echo common('notes-list', array('transcript' => $transcript), 'transcripts'); ?>
+            <?php endif; ?>
         </div>
-        <div class="field">
-            <div class="two columns alpha">
-                <?php echo $this->formLabel('description', __('Description')); ?>
-            </div>
-            <div class="five columns omega inputs">
-                <?php echo $this->formTextarea('description', $this->description, array('rows'=>'8','cols'=>'40')); ?>
-            </div>
+        <div id="note-add">
+            <input type="submit" name="add_note" id="add-note" value="<?php echo __('Add Note'); ?>" />
         </div>
     </fieldset>
-    </section>
-<section class="three columns omega">
-        <div id="save" class="panel">
-            <?php echo $this->formSubmit('save_transcript', __('Save Changes'), array('class'=>'submit big green button')); ?>
-            <?php if ($transcript->exists()): ?>
-                <?php echo transcript_builder_link_to_transcript($this, __('View Public Page'), array('class' => 'big blue button', 'target' => '_blank')); ?>
-                <?php echo link_to($this, 'delete-confirm', __('Delete'), array('class' => 'big red button delete-confirm')); ?>
-            <?php endif; ?>
-            <div id="public-featured">
-                <div class="public">
-                    <label for="public"><?php echo __('Public'); ?>:</label> 
-                    <?php echo $this->formCheckbox('public', $transcript->public, array(), array('1', '0')); ?>
-                </div>
-                <div class="featured">
-                    <label for="featured"><?php echo __('Featured'); ?>:</label> 
-                    <?php echo $this->formCheckbox('featured', $transcript->featured, array(), array('1', '0')); ?>
-                </div>
-            </div>
-        </div>
-    </section>
+</section>    
+    
+<section id="save" class="three columns omega panel"><input id='save-changes' class='submit big green button' type='submit' value='Save Changes' name='submit' />
+	<div class="field"><div id="item-transcript-is-published-label" class="two columns alpha"><label for="item-transcript-is-published" class="optional">Publish this transcript?</label>
+	</div>
+	<div class="inputs">
+	<input type="hidden" name="public" value="0"><input type="checkbox" name="public" id="item-transcript-is-published" value="1" checked="checked" values="1 0">
+	<p class="explanation">Checking this box will make the transcript public</p>
+	</div>
+	</div>
+	<div class="field"><div id="item-transcript-is-featured-label" class="two columns alpha"><label for="item-transcript-is-featured" class="optional">Feature this transcript?</label></div>
+	<div class="inputs">
+	<input type="hidden" name="featured" value="0"><input type="checkbox" name="featured" id="item-transcript-is-featured" value="1" values="1 0">
+	<p class="explanation">Checking this box will make the transcript featured</p>
+	</div>
+	</div>
+	</section>
 </form>
-<?php echo $this->form; ?>
 <?php echo foot(); ?>
