@@ -185,9 +185,25 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
      */
     public function getTranscriptNotes()
     {
-        return $this->getTable('TranscriptNote')->findByNote($this);
+    					// this calls table/TranscriptNote
+    					// can be confusing at first glance, basically saying
+    					// find transcript notes by transcript
+        return $this->getTable('TranscriptNote')->findByTranscript($this);
     }
 
+
+   /**
+     * Get all the notes for this transcript.
+     *
+     * @return Transcript array
+     */
+    public function getNotes()
+    {
+    				// get table for this record class
+        return $this->getTable('TranscriptNote')->findBy(array('transcript' => $this->id, 'sort_field' => 'order'));
+    }
+    
+    
 
 
 // not objects yet, notes are database rows, they must be instantiated as objects so they can be assigned as a collection of objects to this transcript

@@ -6,7 +6,7 @@
  */
 
 require_once dirname(__FILE__) . '../../helpers/TranscriptParse.php';
-
+require_once dirname(__FILE__) . '../../helpers/ItemTranscriptFunctions.php';
 
 /**
  * Controller for Transcripts. 
@@ -84,7 +84,7 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         
         //$transcript_id = $transcript->id;
         
-       // $transcript->notes = $this->item_transcript_notes_list();
+       //$transcript->notes = $this->getNotes();
         
         //$this->view->description = $transcript->title;
         //$this->view->entry = $transcript->entry;
@@ -306,35 +306,5 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
     }
 
 
-/**** RELATED, DEPENDENT ITEMS ****/
-
-	/**
-	 * List the notes for a transcript.
-	 *
-	 * @param 
-	 * @return string
-	 */
-	function item_transcript_notes_list()
-	{
-	
-		$this->findByTranscript($transcript)
-	
-		foreach ($transcript->notes as $note) {
-			$html .= '<br>'. $note->text;
-			}
-			/*
-		$noteId = html_escape($transcript_note->id);
-		$html = '<li class="page" id="page_' . $noteId . '">'
-			  . '<div class="sortable-item">'
-			  . '<a href="../edit-page/' . $noteId . '">' . html_escape($transcript->title) . '</a>'
-			  . '<a class="delete-toggle delete-element" href="#">' . __('Delete') . '</a>'
-			  . '</div>';
-			$html .= '</ul>';
-		}
-		$html .= '</li>';
-		*/
-		
-		return $html;
-	}
 
 }
