@@ -162,6 +162,19 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
         */
         //$this->deleteTaggings();
     }
+    
+    
+    /**
+     * Delete all notes.
+     */
+    protected function _deleteNotes()
+    {
+        if ($this->notes) {
+            foreach ($this->notes as $note) {
+                $note->delete();
+            }
+        }
+    }
 
 
 
@@ -182,7 +195,7 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
     /**
      * Set data for this transcript's notes.
      *
-     * @param array $notesData An array of key-value arrays for each block.
+     * @param array $notesData An array of key-value arrays for each note.
      * @param boolean $deleteExtras Whether to delete any extra preexisting
      *  blocks.
      */ 
