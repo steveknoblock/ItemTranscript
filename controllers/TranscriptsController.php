@@ -62,6 +62,13 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
 	}
 
 
+	public function xyzFooAction() {
+	
+		print "Supports arbitrary actions.";
+		
+		}
+		
+
     /**
      * Edit action.
      */
@@ -78,6 +85,13 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
     {
 	    debug('editAction');
         $transcript = $this->_helper->db->findById();
+        
+        /**
+         * Get notes belonging to this transcript.
+         */
+		$transcript->notes = $transcript->getNotes();
+		
+		
         //$this->view->form = $this->_getForm($transcript);
        // $this->view->id = $transcript->id;
         //$this->view->title = $transcript->title; // I shouldn't need to do this ?
@@ -279,6 +293,74 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         
          parent::showAction();
     }
+
+
+    /**
+     * Add a note to a transcript.
+     *
+     * The URL param 'id' refers to the note that will be contained by the transcript.
+     */
+    public function addNoteAction()
+    {
+        $db = $this->_helper->db->getDb();
+        $request = $this->getRequest();
+        $transcriptId = $request->getParam('id');
+
+        $note = new TranscriptNote;
+        $note->transcript_id = $transcriptId;
+        $exhibit = $note->getExhibit();
+
+
+        /* Todo: Set the order for the new note
+        if($previousPageId) {
+            //set the order to be right after the previous one. Page's beforeSave method will bump up later page orders as needed
+            $previousPage = $db->getTable('ExhibitPage')->find($previousPageId);
+            $note->parent_id = $previousPage->parent_id;
+            $note->order = $previousPage->order + 1;
+        } else {
+            $childCount = $exhibit->countPages(true);
+            $note->order = $childCount +1;
+        }
+        */
+
+        $success = $this->processPageForm($note, 'Add', $exhibit);
+        if ($success) {
+            $this->_helper->flashMessenger("Changes to the exhibit's page were successfully saved!", 'success');
+            if (array_key_exists('add-another-page', $_POST)) {
+                $this->_helper->redirector->gotoRoute(array('action' => 'add-page', 'id' => $exhibit->id, 'previous' => $note->id), 'exhibitStandard');
+            } else {
+                $this->_helper->redirector->gotoRoute(array('action' => 'edit-page', 'id' => $note->id), 'exhibitStandard');
+            }
+            return;
+        }
+
+        $this->render('page-form');
+    }
+    
+    
+    /**
+     * Handle the POST for the note add and edit actions.
+     *
+     * @param TranscriptNote $note
+     * @param string $actionName
+     * @param Transcript $transcript
+     */
+    protected function processPageForm($note, $actionName, $transcript = null)
+    {
+        $this->view->assign(compact('exhibit', 'actionName'));
+        $this->view->transcript_note = $note;
+        if ($this->getRequest()->isPost()) {
+            $note->setPostData($_POST);
+            try {
+                $success = $note->save();
+                return true;
+            } catch (Exception $e) {
+                $this->_helper->flashMessenger($e->getMessage(), 'error');
+                return false;
+            }
+        }
+    }
+    
     
     
     /**

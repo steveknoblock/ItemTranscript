@@ -1,21 +1,17 @@
 <?php
+// notes edit
 
-//$paths = $this->getAssetPaths();
-//print_r($paths);
-//exit;
-	queue_css_file(array('transcripts'));
-	queue_js_file(array('vendor/jquery.nestedSortable','transcripts'));
 
 $head = array('bodyclass' => 'simple-pages primary', 
-              'title' => __('Editing Transcript "%s"', '#'. $this->transcript->id .' '.$this->transcript->title)
+              'title' => __('Editing Note "%s"', '#'. $this->note->id .' '.$this->note->title)
               );
 echo head($head);
 
 //echo $this->title;
 //echo $this->description;
 //print "<p>Breakpoint";
-//echo $this->transcript->title;
-//echo $this->transcript->description;
+//echo $this->note->title;
+//echo $this->note->description;
 
 
 ?>
@@ -28,7 +24,7 @@ echo head($head);
                 <?php echo $this->formLabel('title', __('Title')); ?>
             </div>
             <div class="five columns omega inputs">
-                <?php echo $this->formText('title', $this->transcript->title); ?>
+                <?php echo $this->formText('title', $this->note->title); ?>
             </div>
         </div>
 		<div class="field">
@@ -36,7 +32,7 @@ echo head($head);
                 <?php echo $this->formLabel('description', __('Description')); ?>
             </div>
             <div class="five columns omega inputs">
-                <?php echo $this->formTextarea('description', $this->transcript->description,array( 'cols' => '55', 'rows' => '7')); ?>
+                <?php echo $this->formTextarea('description', $this->note->description,array( 'cols' => '55', 'rows' => '7')); ?>
             </div>
         </div>
         
@@ -45,47 +41,27 @@ echo head($head);
                 <?php echo $this->formLabel('entry', __('Transcript Entry')); ?>
             </div>
             <div class="five columns omega inputs">
-                <?php echo $this->formTextarea('entry', $this->transcript->entry); ?>
+                <?php echo $this->formTextarea('entry', $this->note->entry); ?>
             </div>
         </div>
 
-<?php
-// modelled after
-//echo common('page-list', array('exhibit' => $exhibit), 'exhibits')
- // echo common('note-list', array( 'transcript' => $transcript ), 'transcripts'); 
-?>
-
-    <fieldset>
-        <legend><?php echo __('Notes'); ?></legend>
-        <div id="notes-list-container">
-            <?php if (!$transcript->notes): ?>
-                <p><?php echo __('There are no notes.'); ?></p>
-            <?php else: ?>
-                <p class="instructions"><?php echo __('To reorder notes, click and drag a note to the preferred location.'); ?></p>
-                <?php echo common('note-list', array('transcript' => $transcript), 'transcripts'); ?>
-            <?php endif; ?>
-        </div>
-        <div id="page-add">
-            <input type="submit" name="add_note" id="add-note" value="<?php echo __('Add Note'); ?>" />
-        </div>
-    </fieldset>
     
 
     <section class="three columns omega">
         <div id="save" class="panel">
             <?php echo $this->formSubmit('save_exhibit', __('Save Changes'), array('class'=>'submit big green button')); ?>
-            <?php if ($transcript->exists()): ?>
+            <?php if ($note->exists()): ?>
                 <?php echo __('View Public Page'); ?>
                 <?php echo link_to($exhibit, 'delete-confirm', __('Delete'), array('class' => 'big red button delete-confirm')); ?>
             <?php endif; ?>
             <div id="public-featured">
                 <div class="public">
                     <label for="public"><?php echo __('Public'); ?>:</label> 
-                    <?php echo $this->formCheckbox('public', $this->transcript->public, array(), array('1', '0')); ?>
+                    <?php echo $this->formCheckbox('public', $this->note->public, array(), array('1', '0')); ?>
                 </div>
                 <div class="featured">
                     <label for="featured"><?php echo __('Featured'); ?>:</label> 
-                    <?php echo $this->formCheckbox('featured', $this->transcript->featured, array(), array('1', '0')); ?>
+                    <?php echo $this->formCheckbox('featured', $this->note->featured, array(), array('1', '0')); ?>
                 </div>
             </div>
         </div>
