@@ -1,42 +1,27 @@
 <?php
-// notes edit
-
-
 $head = array('bodyclass' => 'simple-pages primary', 
-              'title' => __('Editing Note "%s"', '#'. $this->note->id .' '.$this->note->title)
+              'title' => __('Add Note')
               );
 echo head($head);
-
-//echo $this->title;
-//echo $this->description;
-//print "<p>Breakpoint";
-//echo $this->note->title;
-//echo $this->note->description;
-
-
 ?>
 <?php echo flash(); ?>
-<?php //echo $this->transcript; ?>
-
 <form id="edit-transcript-form" method="post" class="">
 		<div class="field">
             <div class="two columns alpha">
                 <?php echo $this->formLabel('text', __('Note')); ?>
             </div>
             <div class="five columns omega inputs">
-                <?php echo $this->formTextarea('text', $this->note->text,array( 'cols' => '55', 'rows' => '7')); ?>
+                <?php echo $this->formTextarea('text', '',array( 'cols' => '55', 'rows' => '7')); ?>
             </div>
         </div>
         
-
-    
+        <?php // where are these values going to come from? ?>
+		<?php echo $this->formHidden('transcript_id','20'); ?>
+		<?php echo $this->formHidden('order','3'); ?>
 
     <section class="three columns omega">
         <div id="save" class="panel">
             <?php echo $this->formSubmit('save_exhibit', __('Save Changes'), array('class'=>'submit big green button')); ?>
-            <?php if ($note->exists()): ?>
-                <?php echo link_to($exhibit, 'delete-confirm', __('Delete'), array('class' => 'big red button delete-confirm')); ?>
-            <?php endif; ?>
         </div>
     </section>
     

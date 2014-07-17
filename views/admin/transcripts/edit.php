@@ -11,17 +11,8 @@ $head = array('bodyclass' => 'simple-pages primary',
               );
 echo head($head);
 
-//echo $this->title;
-//echo $this->description;
-//print "<p>Breakpoint";
-//echo $this->transcript->title;
-//echo $this->transcript->description;
-
-
 ?>
 <?php echo flash(); ?>
-<?php //echo $this->transcript; ?>
-
 <form id="edit-transcript-form" method="post" class="">
 		<div class="field">
             <div class="two columns alpha">
@@ -76,7 +67,7 @@ echo head($head);
             <?php echo $this->formSubmit('save_exhibit', __('Save Changes'), array('class'=>'submit big green button')); ?>
             <?php if ($transcript->exists()): ?>
                 <?php echo __('View Public Page'); ?>
-                <?php echo link_to($exhibit, 'delete-confirm', __('Delete'), array('class' => 'big red button delete-confirm')); ?>
+                <?php echo link_to($transcript, 'delete-confirm', __('Delete'), array('class' => 'big red button delete-confirm')); ?>
             <?php endif; ?>
             <div id="public-featured">
                 <div class="public">

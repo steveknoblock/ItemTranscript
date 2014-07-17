@@ -23,7 +23,7 @@
 			$noteId = html_escape($note->id);
 			$html .= '<li class="transcript_note" id="transcript_note_'. $noteId .'">';
 			$html .= '<div class="sortable-item">';
-			$html .= '<a href="../edit-note/' . $noteId . '">' . $noteId . '</a>';
+			$html .= '<a href="'. url('item-transcript/notes/edit/id/' . $noteId) . '">' . $noteId . '</a>';
 			$html .= html_escape($note->text);
 			$html .= ' <a class="delete-toggle delete-element" href="#">' . __('Delete') . '</a>';
 			$html .= '</div>';
