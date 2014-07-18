@@ -29,11 +29,11 @@
 }
 
 /* override for core's .undo-delete hiding */
-#page-list .undo-delete {
+#note-list .undo-delete {
     display: inline;
 }
 
-.page ul { margin-top: 15px; }
+.note ul { margin-top: 15px; }
 
 /* Edit Page */
 
