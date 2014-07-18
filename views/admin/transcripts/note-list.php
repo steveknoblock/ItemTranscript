@@ -9,5 +9,6 @@
 <script type="text/javascript">
 Omeka.addReadyCallback(Omeka.ItemTranscript.enableSorting);
 Omeka.addReadyCallback(Omeka.ItemTranscript.activateDeleteLinks);
+Omeka.addReadyCallback(Omeka.ItemTranscript.setUpFormSubmission);
 </script>
 
