@@ -56,9 +56,7 @@ echo head($head);
                 <?php echo common('note-list', array('transcript' => $transcript), 'transcripts'); ?>
             <?php endif; ?>
         </div>
-        <div id="page-add">
-            <input type="submit" name="add_note" id="add-note" value="<?php echo __('Add Note'); ?>" />
-        </div>
+        
     </fieldset>
     
 
@@ -84,6 +82,13 @@ echo head($head);
     
 
 </form>
+<?php // temporary, for testing ?>
+<form id="edit-transcript-form" method="get" class="" action="http://folks.pairserver.com/omeka/omeka-2.1.4-clean/admin/item-transcript/notes/add">
+<div id="page-add">
+            <input type="submit" name="add_note" id="add-note" value="<?php echo __('Add Note'); ?>" />
+</div>
+</form>
+        
 <?php echo foot(); ?>
 <script type="text/javascript" charset="utf-8">
 //<![CDATA[

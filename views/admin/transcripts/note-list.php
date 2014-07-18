@@ -12,5 +12,8 @@
 </div>
 </div>
 </section>
-
+<script type="text/javascript">
+Omeka.addReadyCallback(Omeka.ItemTranscript.enableSorting);
+Omeka.addReadyCallback(Omeka.ItemTranscript.activateDeleteLinks);
+</script>
 
