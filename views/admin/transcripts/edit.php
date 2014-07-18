@@ -40,11 +40,6 @@ echo head($head);
             </div>
         </div>
 
-<?php
-// modelled after
-//echo common('page-list', array('exhibit' => $exhibit), 'exhibits')
- // echo common('note-list', array( 'transcript' => $transcript ), 'transcripts'); 
-?>
 
     <fieldset>
         <legend><?php echo __('Notes'); ?></legend>
@@ -52,7 +47,7 @@ echo head($head);
             <?php if (!$transcript->notes): ?>
                 <p><?php echo __('There are no notes.'); ?></p>
             <?php else: ?>
-                <p class="instructions"><?php echo __('To reorder notes, click and drag a note to the preferred location.'); ?></p>
+                <p class="reorder-instructions"><?php echo __('To reorder notes, click and drag a note to the preferred location.'); ?></p>
                 <?php echo common('note-list', array('transcript' => $transcript), 'transcripts'); ?>
             <?php endif; ?>
         </div>

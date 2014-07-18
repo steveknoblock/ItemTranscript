@@ -42,7 +42,7 @@ Omeka.ItemTranscript = {};
     };
 
     Omeka.ItemTranscript.activateDeleteLinks = function () {
-        $('#page-list .delete-element').click(function (event) {
+        $('#note-list .delete-element').click(function (event) {
             event.preventDefault();
             var header = $(this).parent();
             if ($(this).hasClass('delete-element')) {
@@ -56,16 +56,16 @@ Omeka.ItemTranscript = {};
     };
 
     Omeka.ItemTranscript.setUpFormSubmission = function () {
-        $('#exhibit-metadata-form').submit(function (event) {
+        $('edit-transcript-form').submit(function (event) {
             // add ids to li elements so that we can pull out the parent/child relationships
-            var listData = $('#page-list').nestedSortable('serialize');
+            var listData = $('#note-list').nestedSortable('serialize');
             var deletedIds = [];
-            $('#page-list .deleted').each(function () {
+            $('#note-list .deleted').each(function () {
                 deletedIds.push($(this).parent().attr('id').match(/_(.*)/)[1]);
             });
             
-            $('#pages-hidden').val(listData);
-            $('#pages-delete-hidden').val(deletedIds.join(','));
+            $('#notes-hidden').val(listData);
+            $('#notes-delete-hidden').val(deletedIds.join(','));
         });
     };
 

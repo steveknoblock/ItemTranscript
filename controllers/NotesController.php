@@ -241,7 +241,7 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
 
         $success = $this->processPageForm($note, 'Add', $exhibit);
         if ($success) {
-            $this->_helper->flashMessenger("Changes to the exhibit's page were successfully saved!", 'success');
+            $this->_helper->flashMessenger("Changes to the transcripts's note were successfully saved!", 'success');
             if (array_key_exists('add-another-page', $_POST)) {
                 $this->_helper->redirector->gotoRoute(array('action' => 'add-page', 'id' => $exhibit->id, 'previous' => $note->id), 'exhibitStandard');
             } else {

@@ -18,7 +18,7 @@
 	
 		$transcript = get_current_record('transcript');
 		$transcript->notes = $transcript->getNotes();
-		//$html = '<ul>'; supplied by view
+		$html = '<ul id="note-list" class="sortable">';
 		foreach ($transcript->notes as $note) {
 			$noteId = html_escape($note->id);
 			$html .= '<li class="note" id="transcript_note_'. $noteId .'">';
@@ -29,7 +29,8 @@
 			$html .= '</div>';
 			$html .= '</li>';
 		}
-		//$html .= '</ul>'; supplied by view
+		$html .= '<input type="hidden" name="pages-hidden" value="" id="pages-hidden">    <input type="hidden" name="pages-delete-hidden" value="" id="pages-delete-hidden">';
+		$html .= '</ul>';
 		debug('return from item_transcript_notes_list()');
 		return $html;
 	}
