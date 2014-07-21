@@ -7,18 +7,11 @@ $head = array('bodyclass' => 'simple-pages primary',
               );
 echo head($head);
 
-//echo $this->title;
-//echo $this->description;
-//print "<p>Breakpoint";
-//echo $this->note->title;
-//echo $this->note->description;
-
-
 ?>
 <?php echo flash(); ?>
 <?php //echo $this->transcript; ?>
 
-<form id="edit-transcript-form" method="post" class="">
+<form id="transcript-edit-form" method="post" class="">
 		<div class="field">
             <div class="two columns alpha">
                 <?php echo $this->formLabel('text', __('Note')); ?>

@@ -3,12 +3,14 @@
 //$paths = $this->getAssetPaths();
 //print_r($paths);
 //exit;
-	queue_css_file(array('transcripts'));
+
+	queue_css_file(array('transcripts', 'jquery-ui'));
 	queue_js_file(array('vendor/jquery.nestedSortable','transcripts'));
 
 $head = array('bodyclass' => 'simple-pages primary', 
               'title' => __('Editing Transcript "%s"', '#'. $this->transcript->id .' '.$this->transcript->title)
               );
+              
 echo head($head);
 
 ?>
@@ -47,8 +49,9 @@ echo head($head);
             <?php if (!$transcript->notes): ?>
                 <p><?php echo __('There are no notes.'); ?></p>
             <?php else: ?>
-                <p class="reorder-instructions"><?php echo __('To reorder notes, click and drag a note to the preferred location.'); ?></p>
-                <?php echo common('note-list', array('transcript' => $transcript), 'transcripts'); ?>
+                <p id="reorder-instructions"><?php echo __('To reorder notes, click and drag a note to the preferred location.'); ?></p>
+                <?php 
+                echo common('note-list', array('transcript' => $transcript), 'transcripts'); ?>
             <?php endif; ?>
         </div>
         
@@ -61,7 +64,7 @@ echo head($head);
             <?php if ($transcript->exists()): ?>
                 <?php echo __('View Public Page'); ?>
                 
-                <?php echo item_transcript_link_to_transcript($transcript, __('View Public Page'), array('class' => 'big blue button', 'target' => '_blank')); ?>
+                <?php //echo item_transcript_link_to_transcript($transcript, __('View Public Page'), array('class' => 'big blue button', 'target' => '_blank')); ?>
                 
                 <?php echo link_to($transcript, 'delete-confirm', __('Delete'), array('class' => 'big red button delete-confirm')); ?>
             <?php endif; ?>
@@ -88,13 +91,6 @@ echo head($head);
 </form>
         
 <?php echo foot(); ?>
-<script type="text/javascript" charset="utf-8">
-//<![CDATA[
-    jQuery(window).load(function() {
-        Omeka.wysiwyg();
-    });
-//]]>
-</script>
 <script type="text/javascript">
 jQuery(document).ready(function () {
     Omeka.runReadyCallbacks();
