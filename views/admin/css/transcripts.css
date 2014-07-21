@@ -1,4 +1,4 @@
-#exhibits-breadcrumb {
+#transcripts-breadcrumb {
     padding: .5em;
     background-color: #fbfbf9;
     border-bottom: 1px solid #E7E7E7;
@@ -313,38 +313,6 @@
     box-sizing: border-box;
 }
 
-.file-select {
-    overflow: auto;
-    margin: 10px 0;
-}
-
-.file-select ul {
-    padding-left: 0;
-    list-style-type: none;
-}
-
-.file-select .item-file {
-    width: 80px;
-    height: 110px;
-    border: 1px solid #E7E7E7;
-    padding: 5px;
-    cursor: pointer;
-}
-
-.file-select .item-file label {
-    cursor: pointer;
-}
-
-.item-file .file-title {
-    width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.file-select input[type=radio] {
-    display: none;
-}
 
 /* Block form */
 .block-form, #block-container > .ui-sortable-highlight {
@@ -650,33 +618,6 @@ div.selected-items {
     padding: 0;
 }
 
-.layout-options h4 {
-    box-sizing: border-box;
-    margin: 0;
-    float: left;
-}
-
-.layout-options *:last-child {
-    margin-bottom: 0;
-}
-
-.layout-options label {
-    font-weight: normal;
-}
-
-.layout-options > div {
-    display: none;
-    border-bottom: 1px solid #D6D5C2;
-    padding: 20px 10px;
-}
-
-.layout-options > .block-header {
-    background: #F3F3E7;
-    display: block;
-    padding: 10px;
-    overflow: auto;
-    line-height: 1.5em;
-}
 
 .frozen:after {
     position: absolute;
@@ -690,31 +631,7 @@ div.selected-items {
     z-index: 100;
 }
 
-.selected.layout-description {
-    display: block;
-}
 
-.layout-description {
-    font-size: 14px;
-    line-height: 20px;
-    background-color: #F3F3E7;
-    width: 100%;
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
-    border-radius: 2px;
-    border: 1px solid #D6D5C2;
-    padding: 10px 0;
-    margin: 10px 0 0;
-    display: none;
-}
-
-#theme {
-    width: 68%;
-    float: left;
-    margin-right: 2%;
-    padding-right: 40px;
-    text-overflow: ellipsis;
-}
 
 input[type=submit].configure-button {
     width: 30%;
@@ -725,16 +642,16 @@ input[type=submit].configure-button {
 
 /* jQuery UI overrides */
 
-.exhibits .ui-dialog {
+.transcripts .ui-dialog {
     padding: 0;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.5)
 }
 
-.exhibits .ui-widget-content {
+.transcripts .ui-widget-content {
     border: 0;
 }
 
-.exhibits .ui-widget-header {
+.transcripts .ui-widget-header {
     background-image: -moz-linear-gradient(top, #F5F3EC, #E9E5DA);
     background-image: -webkit-linear-gradient(top, #F5F3EC, #E9E5DA);
     background-image: linear-gradient(to bottom, #F5F3EC, #E9E5DA);

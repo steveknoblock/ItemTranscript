@@ -283,15 +283,15 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         }
         */
         
-        $transcript_notes = findByTranscript($transcript);
+        //$transcript_notes = findByTranscript($transcript);
         
         
 		$this->view->transcript = $transcript;
 		debug('About to render view');
-		$this->render('show');
+		//$this->render('show');
         
         
-         parent::showAction();
+         //parent::showAction();
     }
 
 

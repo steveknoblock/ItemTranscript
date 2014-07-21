@@ -60,6 +60,9 @@ echo head($head);
             <?php echo $this->formSubmit('save_exhibit', __('Save Changes'), array('class'=>'submit big green button')); ?>
             <?php if ($transcript->exists()): ?>
                 <?php echo __('View Public Page'); ?>
+                
+                <?php echo item_transcript_link_to_transcript($transcript, __('View Public Page'), array('class' => 'big blue button', 'target' => '_blank')); ?>
+                
                 <?php echo link_to($transcript, 'delete-confirm', __('Delete'), array('class' => 'big red button delete-confirm')); ?>
             <?php endif; ?>
             <div id="public-featured">

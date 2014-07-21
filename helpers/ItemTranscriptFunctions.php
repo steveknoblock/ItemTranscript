@@ -21,7 +21,7 @@
 		$html = '<ul id="note-list" class="sortable">';
 		foreach ($transcript->notes as $note) {
 			$noteId = html_escape($note->id);
-			$html .= '<li class="note" id="transcript_note_'. $noteId .'">';
+			$html .= '<li class="note" id="note_'. $noteId .'">';
 			$html .= '<div class="sortable-item">';
 			$html .= '<a href="'. url('item-transcript/notes/edit/id/' . $noteId) . '">' . $noteId . '</a>';
 			$html .= html_escape($note->text);
@@ -29,8 +29,8 @@
 			$html .= '</div>';
 			$html .= '</li>';
 		}
-		$html .= '<input type="hidden" name="pages-hidden" value="" id="pages-hidden">    <input type="hidden" name="pages-delete-hidden" value="" id="pages-delete-hidden">';
+		$html .= '<input type="hidden" name="notes-hidden" value="" id="notes-hidden">    <input type="hidden" name="notes-delete-hidden" value="" id="notes-delete-hidden">';
 		$html .= '</ul>';
-		debug('return from item_transcript_notes_list()');
 		return $html;
 	}
+
