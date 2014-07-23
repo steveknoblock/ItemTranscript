@@ -131,6 +131,7 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
 
     }
     
+
     /**
      * Validation callback.
      */
@@ -200,7 +201,7 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
     public function getNotes()
     {
     				// get table for this record class
-        return $this->getTable('TranscriptNote')->findBy(array('transcript' => $this->id, 'sort_field' => 'order'));
+        return $this->getTable('TranscriptNote')->findBy(array('transcript_id' => $this->id, 'sort_field' => 'order'));
     }
     
     

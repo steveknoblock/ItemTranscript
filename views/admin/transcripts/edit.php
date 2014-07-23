@@ -8,21 +8,17 @@
    echo head($head);
 ?>
 <?php echo flash(); ?>
-
-
-
-
-<form id="edit-transcript-formx" method="post" class="">
+<form id="edit-transcript-form" method="post" class="">
+	<section class="seven columns alpha">
 	<fieldset>
-	<legend>Transcript Metadata</legend>
-	<div class="seven columns alpha">
+	<legend><?php echo __('Transcript Metadata'); ?></legend>
 		<div class="field">
             <div class="two columns alpha">
                 <?php echo $this->formLabel('title', __('Title')); ?>
             </div>
             <div class="five columns omega inputs">
                 <?php echo $this->formText('title', $this->transcript->title); ?>
-            </div>
+        	</div>
         </div>
 		<div class="field">
             <div class="two columns alpha">
@@ -31,8 +27,7 @@
             <div class="five columns omega inputs">
                 <?php echo $this->formTextarea('description', $this->transcript->description,array( 'cols' => '55', 'rows' => '7')); ?>
             </div>
-        </div>
-        
+        </div>        
 		<div class="field">
             <div class="two columns alpha">
                 <?php echo $this->formLabel('entry', __('Transcript Entry')); ?>
@@ -41,7 +36,6 @@
                 <?php echo $this->formTextarea('entry', $this->transcript->entry); ?>
             </div>
         </div>
-	</div>
 	</fieldset>
 
     <fieldset>
@@ -55,12 +49,10 @@
                 echo common('note-list', array('transcript' => $transcript), 'transcripts'); ?>
             <?php endif; ?>
         </div>
-        
     </fieldset>
-    
+</section>
 
-    <section class="three columns omega">
-        <div id="save" class="panel">
+   <section id="save" class="three columns omega panel">
             <?php echo $this->formSubmit('save_exhibit', __('Save Changes'), array('class'=>'submit big green button')); ?>
             <?php if ($transcript->exists()): ?>
                 <?php echo __('View Public note'); ?>
@@ -79,16 +71,9 @@
                     <?php echo $this->formCheckbox('featured', $this->transcript->featured, array(), array('1', '0')); ?>
                 </div>
             </div>
-        </div>
     </section>
     
-
-</form>
-<?php // temporary, for testing ?>
-<form id="edit-transcript-form" method="get" class="" action="http://folks.pairserver.com/omeka/omeka-2.1.4-clean/admin/item-transcript/notes/add">
-<div id="note-add">
-            <input type="submit" name="add_note" id="add-note" value="<?php echo __('Add Note'); ?>" />
-</div>
+    
 </form>
         
 <?php echo foot(); ?>
