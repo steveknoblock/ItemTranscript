@@ -53,7 +53,7 @@
 </section>
 
    <section id="save" class="three columns omega panel">
-            <?php echo $this->formSubmit('save_exhibit', __('Save Changes'), array('class'=>'submit big green button')); ?>
+            <?php echo $this->formSubmit('save_transcript', __('Save Changes'), array('class'=>'submit big green button')); ?>
             <?php if ($transcript->exists()): ?>
                 <?php echo __('View Public note'); ?>
                 

@@ -6,6 +6,8 @@
 		<?php echo item_transcript_notes_list(); ?>
 	</div>
 </div>
+<?php echo $this->formHidden('notes-hidden'); ?>
+<?php echo $this->formHidden('notes-delete-hidden'); ?>
 <script type="text/javascript">
 Omeka.addReadyCallback(Omeka.ItemTranscript.enableSorting);
 Omeka.addReadyCallback(Omeka.ItemTranscript.activateDeleteLinks);

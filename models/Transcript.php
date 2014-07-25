@@ -40,7 +40,7 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
      *
      * @var array
      */
-    public $notes;
+    //public $notes;
     
     /**
      * Whether the transcript is featured.
@@ -114,7 +114,7 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
     /**
      * After-save ActiveRecord callback.
      *
-     * Updates search text and page data for the transcript.
+     * Updates search text and notes data for the transcript.
      *
      * @param array $args
      */
@@ -129,8 +129,20 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
     	$this->addSearchText($this->title);
     	$this->addSearchText($this->description);
 
-    }
-    
+		// Process any notes marked for deletion
+		// If a note id is mentioned in the delete list, delete it.
+		debug('POSTed notes to be deleted:'.$_POST['notes-delete-hidden']);
+		if(isset($_POST['notes-delete-hidden'])) {
+			$notesToDelete = explode(',', $_POST['notes-delete-hidden']);
+			foreach($notesToDelete as $id) {
+				$note = $this->getTable('TranscriptNote')->find($id);
+				if ($note) {
+					$note->delete();
+				}
+			}
+		}
+	}
+
 
     /**
      * Validation callback.
@@ -151,7 +163,7 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
     /**
      * Delete callback.
      *
-     * Delete all assigned pages when the transcript is deleted.
+     * Delete all assigned notes when the transcript is deleted.
      */
     protected function _delete() {
         /*
@@ -209,6 +221,8 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
 
 // not objects yet, notes are database rows, they must be instantiated as objects so they can be assigned as a collection of objects to this transcript
 
+//An array of key-value arrays for each note.
+
     /**
      * Set data for this transcript's notes.
      *
@@ -232,8 +246,8 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
         }
         // Any leftover blocks beyond the new data get erased.
         if ($deleteExtras) {
-            foreach ($existingBlocks as $extraBlock) {
-                $extraBlock->delete();
+            foreach ($existingNotes as $extraNote) {
+                $extraNote->delete();
             }
         }
     }

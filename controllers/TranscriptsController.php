@@ -31,42 +31,33 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
      */
     public function addAction()
     {
-    	debug('addAction');
-        //throw new Omeka_Controller_Exception_404;
-
+    	//debug('addAction');
 
         // Create a new transcript.
        	$transcript = new Transcript;
         
-        debug('new Transcript');
+        //debug('new Transcript');
         
         // Get all the element sets that apply to the item.
        // $this->view->elementSets = $this->_getItemElementSets();
         
        
 		if ($this->getRequest()->isPost()) {
-			debug('Processing request');
+			//debug('Processing request');
 			$this->_processTranscriptForm($transcript, 'add');
 			// Go to browse.
         	$this->_helper->redirector('browse');
 		} else {
-			debug('Getting form');
+			//debug('Getting form');
 			// Omeka_Form_Admin is too simple to handle the item data
 			//$tmp = $this->_getForm($transcript);
-			debug('Displaying form');
+			//debug('Displaying form');
 			//$this->view->form = $tmp;
 			//$this->render('transcript-form');
 			
 			$this->render('add');
 		}
 	}
-
-
-	public function xyzFooAction() {
-	
-		print "Supports arbitrary actions.";
-		
-		}
 		
 
     /**
@@ -105,12 +96,8 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         
         // okay, model objects must be injected explicity into view
         // $this->view->exhibit = $exhibit;
-           $this->view->transcript = $transcript;
-        //var_dump( $transcript );
-    
-        
+        $this->view->transcript = $transcript;
         $this->_processTranscriptForm($transcript, 'edit');
-	    //$this->render('transcript-form');
     }
 
 	
@@ -123,8 +110,10 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
 		// don't display messages or save if not POST mode request
 		if ($this->getRequest()->isPost()) {
 			debug('is POST request');
+			debug(var_dump($post));
 			try {
 			$transcript->setPostData($_POST);
+			debug('About to save transcript');
 			if ($transcript->save()) {
 				if ('add' == $mode) {
 					$this->_helper->flashMessenger(__('The new transcript "%s" has been saved.', $transcript->title), 'success');
@@ -141,7 +130,14 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
 		 }
 	}           
 
+    
+    /**
+     * Delete transcript.
+     * Uses parent::deleteAction()
+     */
+  
 
+ 	// Note: the following function is unused due to limitations on the Omeka form system
 	/**
 	 * Generate and return the HMTL for the transcript form.
 	 * This is typically be made available to the view.
@@ -285,84 +281,21 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         
         //$transcript_notes = findByTranscript($transcript);
         
-        
 		$this->view->transcript = $transcript;
-		debug('About to render view');
-		//$this->render('show');
-        
-        
-         //parent::showAction();
     }
-
+    
 
     /**
      * Add a note to a transcript.
      *
      * The URL param 'id' refers to the note that will be contained by the transcript.
      */
-    public function addNoteAction()
-    {
-        $db = $this->_helper->db->getDb();
-        $request = $this->getRequest();
-        $transcriptId = $request->getParam('id');
-
-        $note = new TranscriptNote;
-        $note->transcript_id = $transcriptId;
-        $exhibit = $note->getExhibit();
-
-
-        /* Todo: Set the order for the new note
-        if($previousPageId) {
-            //set the order to be right after the previous one. Page's beforeSave method will bump up later page orders as needed
-            $previousPage = $db->getTable('ExhibitPage')->find($previousPageId);
-            $note->parent_id = $previousPage->parent_id;
-            $note->order = $previousPage->order + 1;
-        } else {
-            $childCount = $exhibit->countPages(true);
-            $note->order = $childCount +1;
-        }
-        */
-
-        $success = $this->processPageForm($note, 'Add', $exhibit);
-        if ($success) {
-            $this->_helper->flashMessenger("Changes to the exhibit's page were successfully saved!", 'success');
-            if (array_key_exists('add-another-page', $_POST)) {
-                $this->_helper->redirector->gotoRoute(array('action' => 'add-page', 'id' => $exhibit->id, 'previous' => $note->id), 'exhibitStandard');
-            } else {
-                $this->_helper->redirector->gotoRoute(array('action' => 'edit-page', 'id' => $note->id), 'exhibitStandard');
-            }
-            return;
-        }
-
-        $this->render('page-form');
-    }
+	// This is handled by the Notes controller.
     
     
-    /**
-     * Handle the POST for the note add and edit actions.
-     *
-     * @param TranscriptNote $note
-     * @param string $actionName
-     * @param Transcript $transcript
-     */
-    protected function processPageForm($note, $actionName, $transcript = null)
-    {
-        $this->view->assign(compact('exhibit', 'actionName'));
-        $this->view->transcript_note = $note;
-        if ($this->getRequest()->isPost()) {
-            $note->setPostData($_POST);
-            try {
-                $success = $note->save();
-                return true;
-            } catch (Exception $e) {
-                $this->_helper->flashMessenger($e->getMessage(), 'error');
-                return false;
-            }
-        }
-    }
+
     
-    
-    
+        
     /**
      * Use global settings for determining browse page limits.
      *

@@ -29,7 +29,7 @@
 			$html .= '</div>';
 			$html .= '</li>';
 		}
-		$html .= '<input type="hidden" name="notes-hidden" value="" id="notes-hidden">    <input type="hidden" name="notes-delete-hidden" value="" id="notes-delete-hidden">';
+		//$html .= '<input type="hidden" name="notes-hidden" value="" id="notes-hidden">    <input type="hidden" name="notes-delete-hidden" value="" id="notes-delete-hidden">';
 		$html .= '</ul>';
 		return $html;
 	}
