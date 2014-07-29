@@ -130,6 +130,8 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
     	$this->addSearchText($this->description);
 
 		// don't call save in after save, since it calls after save again
+		// wait a minute, I don't get this. Why is calling $note->save() 
+		// invoking $transcript->afterSave() ?
 		debug($_POST['notes-hidden']);
 
 		if(isset($_POST['notes-hidden'])) {
@@ -144,7 +146,6 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
 				$note->save();
 			}
 		}
-	
 
 		// Process any notes marked for deletion
 		// If a note id is mentioned in the delete list, delete it.

@@ -108,9 +108,10 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
 	{
 		debug('Processing transcript form');
 		// don't display messages or save if not POST mode request
-		if ($this->getRequest()->isPost()) 
+		if ($this->getRequest()->isPost()) {
 			try {
 			$transcript->setPostData($_POST); // copied from exhibits q: why refer to php post var when request is available?
+		
 			debug('About to save transcript');
 			if ($transcript->save()) {
 				if ('add' == $mode) {
