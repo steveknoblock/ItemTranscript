@@ -51,21 +51,29 @@ Omeka.ItemTranscript = {};
 		});
 	};
 
-	Omeka.ItemTranscript.setUpFormSubmission = function () {
+Omeka.ItemTranscript.setUpFormSubmission = function () {
 		jQuery('#edit-transcript-form').submit(function (event) {
 			// add ids to li elements so that we can pull out the parent/child relationships
 			var listData = jQuery('#note-list').nestedSortable('serialize');
+			
+			var noteIds = [];
+			jQuery('#note-list .note').each(function () {
+			// note this is iterating over the notes marked for deletion
+				noteIds.push(jQuery(this).attr('id').match(/_(.*)/)[1]);
+			});
+			
 			var deletedIds = [];
 			jQuery('#note-list .deleted').each(function () {
 			// note this is iterating over the notes marked for deletion
 deletedIds.push(jQuery(this).parent().attr('id').match(/_(.*)/)[1]);
 			});
-			
-			jQuery('#notes-hidden').val(listData); // set value attrib on hidden input
+
+			//jQuery('#notes-hidden').val(listData); // set value attrib on hidden input
+			jQuery('#notes-hidden').val(noteIds.join(','));
 			jQuery('#notes-delete-hidden').val(deletedIds.join(',')); // same here
+			//alert(deletedIds); // I've confirmed in the V8 debugger that the value for notes-delete-hidden INPUT consists of the comma separated deleted id list
 		});
     };
-    
     
 
 })(jQuery);

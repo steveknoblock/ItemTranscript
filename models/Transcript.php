@@ -129,6 +129,23 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
     	$this->addSearchText($this->title);
     	$this->addSearchText($this->description);
 
+		// don't call save in after save, since it calls after save again
+		debug($_POST['notes-hidden']);
+
+		if(isset($_POST['notes-hidden'])) {
+			$notesToReorder = explode(',', $_POST['notes-hidden']);
+			debug($notesToReorder);
+			foreach($notesToReorder as $i => $id) {
+				debug('reorder: '. ($i+1) .','. $id);
+				$note = $this->getTable('TranscriptNote')->find($id);
+				if ($note) {
+					$note->order = $i+1;
+				}
+				$note->save();
+			}
+		}
+	
+
 		// Process any notes marked for deletion
 		// If a note id is mentioned in the delete list, delete it.
 		debug('POSTed notes to be deleted:'.$_POST['notes-delete-hidden']);

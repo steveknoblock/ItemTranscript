@@ -21,7 +21,7 @@
 		$html = '<ul id="note-list" class="sortable">';
 		foreach ($transcript->notes as $note) {
 			$noteId = html_escape($note->id);
-			$html .= '<li class="note" id="note_'. $noteId .'">';
+			$html .= '<li class="note" id="note_'. html_escape($note->order) .'">';
 			$html .= '<div class="sortable-item">';
 			$html .= '<a href="'. url('item-transcript/notes/edit/id/' . $noteId) . '">' . $noteId . '</a>';
 			$html .= html_escape($note->text);
