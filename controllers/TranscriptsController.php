@@ -245,7 +245,6 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
     }
 
 
-
     /**
      * Show transcript page.
      */

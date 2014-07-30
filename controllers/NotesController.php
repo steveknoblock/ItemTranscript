@@ -30,8 +30,35 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
  	public function addAction()
 	{
 		debug('addAction');
+		
+		//If no notes exist for this transcript
+		//    create the note
+		//    set order property to 1
+		// process the note form (saving the note)
+		
+		
+		// I need to get a property from the Transcript noteCount. How
+		// do I do this?
+		// We must know which transcript this note is to be associated with
+		// and that the value must be coming in through the POST, so that
+		// is where to get the transcript id from.
+		
+		// No, no, no. Creating a new note does not always start with one!
+		// It needs to know whether it is creating the first note or not
+		
 		// Create a new note.
 		$note = new TranscriptNote;
+		// if transcript notes property empty (no notes)
+		// flag represents this status for hacking this in
+		if( $notranscriptnotes ) {
+			$note->order = 1;
+		}
+		
+		$parentTranscriptId = $_POST['transcript_id'];
+		$_POST['order'] = 1;
+		
+		// Or I could just check the POSTed order value for nonexistence?
+		// Or the add form order hidden input could default to 1
 		
 		if($this->getRequest()->isPost()) {
 			$this->_processTranscriptNoteForm($note, 'add');
@@ -79,6 +106,10 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
 		// don't display messages or save if not POST mode request
 		if ($this->getRequest()->isPost()) {
 			debug('is POST request');
+			// this is one way to do it
+			if ('add' == $mode) {
+				$note->order = 1;
+			}
 			try {
 			$note->setPostData($_POST);
 			if ($note->save()) {
