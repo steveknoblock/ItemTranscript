@@ -45,6 +45,14 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
 		
 		// No, no, no. Creating a new note does not always start with one!
 		// It needs to know whether it is creating the first note or not
+		// Okay, when you add a note, the order cannot be set to 1 on
+		// a hidden field in the form. That would force every note to
+		// order of 1.
+		// It is possible to use the hidden field to communicate the
+		// number of notes in the transcript note list. Could get
+		// that value before rendering the form and pass it to the
+		// hidden field.
+		
 		
 		// Create a new note.
 		$note = new TranscriptNote;
