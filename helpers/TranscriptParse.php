@@ -38,31 +38,39 @@ class TranscriptParse {
 		foreach ( $this->textBlocks as $k => $v ) {
 		
 			// common mistakes
-	$v = preg_replace('/\(V\/0\):/', '(V/O):', $v);
-	$v = preg_replace('/\(0\/C\)/', '(O/C)', $v);
+			$v = preg_replace('/\(V\/0\):/', '(V/O):', $v);
+			$v = preg_replace('/\(0\/C\)/', '(O/C)', $v);
 	
 			// strip newlines, should any remain
-	$v = preg_replace('/\n/', '', $v);
+			$v = preg_replace('/\n/', '', $v);
 	
 			$class = "line"; // default
-			if( preg_match('/^[A-Z]+:/', $v) ) {
+			if(preg_match('/^[A-Z]+:/', $v)) {
 				debug('matches dialog');
 				$class = "dialog";
-				}
-			if( preg_match('/^[A-Z]+ +\(V\/O\):/', $v) ) {
+			}
+			if(preg_match('/^[A-Z]+ +\(V\/O\):/', $v)) {
 				debug('matches voiceover');
 				$class = "voiceover";
-				}
-			if( preg_match('/^[A-Z]+ +\(O\/C\):/', $v) ) {
+			}
+			if(preg_match('/^[A-Z]+ +\(O\/C\):/', $v)) {
 				$class = "offcamera";
-				}
+			}
+
+			// Process note references
+			if(preg_match('/(\[[0-9]+\])/', $v)) {
+				debug('matches note reference');
+				$title = 'This is yet another note.';
+				$v = preg_replace('/(\[[0-9]+\])/', '<note id="note_\\1">\\1</note>', $v);
+			}
+			// assemble output block
 			$o .= '<div class="'. $class. '">'. $v ."</div>\n";
 		}
 		//debug('---->'.$o);
 		debug('Exiting TranscriptParse::parse()');
 		//debug($this->text);
 		$this->text = $o;
-		}
+	}
 	
 	protected function Blockify()
 	{

@@ -19,9 +19,19 @@
 		$transcript = get_current_record('transcript');
 		$transcript->notes = $transcript->getNotes();
 		$html = '<ul id="note-list" class="sortable">';
+		
+		
+		/*
+		display zero-based index as one-based index to user
+		foreach ($transcript->getPageBlocks() as $index => $block):
+            $block->order = $index + 1;
+            echo $this->partial('transcripts/block-form.php', array('block' => $block));
+        endforeach
+        
+        */
 		foreach ($transcript->notes as $note) {
 			$noteId = html_escape($note->id);
-			$html .= '<li class="note" id="note_'. $note->order .'">';
+			$html .= '<li class="note" id="note_'. $noteId .'">';
 			$html .= '<div class="sortable-item">';
 			$html .= '<a href="'. url('item-transcript/notes/edit/id/' . $noteId) . '">' . html_escape($note->order) . '</a>';
 			$html .= html_escape($note->text);

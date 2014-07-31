@@ -53,12 +53,18 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
 		// that value before rendering the form and pass it to the
 		// hidden field.
 		
+		debug('Creating new note instance');
 		
 		// Create a new note.
 		$note = new TranscriptNote;
 		// if transcript notes property empty (no notes)
 		// flag represents this status for hacking this in
-		if( $notranscriptnotes ) {
+		
+		debug('Getting note count');
+		// Get note count
+		$noteCount = get_db()->getTable('TranscriptNotes')->findBy(array('transcript_id' => $this->transcript_id));
+		debug('Note Count: '. $noteCount);
+		if( $noteCount == 0 ) {
 			$note->order = 1;
 		}
 		

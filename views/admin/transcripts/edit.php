@@ -49,15 +49,19 @@
                 echo common('note-list', array('transcript' => $transcript), 'transcripts'); ?>
             <?php endif; ?>
         </div>
+        <div id="page-add">
+            <input type="submit" name="add_note" id="add-note" value="<?php echo __('Add Note'); ?>" />
+		</div>
     </fieldset>
 </section>
 
    <section id="save" class="three columns omega panel">
             <?php echo $this->formSubmit('save_transcript', __('Save Changes'), array('class'=>'submit big green button')); ?>
             <?php if ($transcript->exists()): ?>
-                <?php echo __('View Public note'); ?>
-                
-                <?php //echo item_transcript_link_to_transcript($transcript, __('View Public note'), array('class' => 'big blue button', 'target' => '_blank')); ?>
+                <a href="<?php echo html_escape(record_url('transcript')); ?>">
+                        <?php echo __('View Public Transcript'); ?>
+                </a>
+                <?php //echo item_transcript_link_to_transcript($transcript, __('View Public Transcript'), array('class' => 'big blue button', 'target' => '_blank')); ?>
                 
                 <?php echo link_to($transcript, 'delete-confirm', __('Delete'), array('class' => 'big red button delete-confirm')); ?>
             <?php endif; ?>

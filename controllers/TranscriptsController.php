@@ -75,6 +75,13 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
     public function editAction()
     {
 	    debug('editAction');
+	    
+	    /*
+	    if($_POST['submit']  == 'add_note') {
+	    	$this->_helper->redirector(array( 'item_transcript', 'notes', 'add'));
+	    }
+	    */
+	    
         $transcript = $this->_helper->db->findById();
         
         /**
@@ -266,6 +273,7 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         debug('Looking for transcript: '. $transcriptId);
         
         $transcript = $this->_helper->db->getTable('Transcript')->find($transcriptId);
+        
         //var_dump($foo);
        	// 'ItemTranscript_Transcript is converted to
         // omeka_item_transcript_transcripts
@@ -277,8 +285,11 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         }
         */
         
-        //$transcript_notes = findByTranscript($transcript);
-        
+        /**
+         * Get notes belonging to this transcript and add to view.
+         * Add transcript to view.
+         */
+		$this->view->notes = $transcript->getNotes();
 		$this->view->transcript = $transcript;
     }
     
@@ -291,6 +302,21 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
 	// This is handled by the Notes controller.
     
     
+    /**
+     * getNoteCount
+     * Get the number of notes belonging to this transcript.
+     * @return int
+     */
+     public function getNoteCount() {
+     	// This could get the value of $this->noteCount;
+     	// or it could query the Notes table for a count of notes belonging to this transcript by id
+     	// or its also possible when the transcript is constructed to query
+     	// all its notes and get the count from the array containing them.
+     	
+     	// This needs a WHERE clause
+     	$noteCount = get_db()->getTable('TranscriptNotes')->findBy(array('transcript_id' => $transcript->id));
+     	return $noteCount;
+     }
 
     
         

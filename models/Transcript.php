@@ -43,6 +43,13 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
     //public $notes;
     
     /**
+     * Count of notes belonging to transcript.
+     *
+     * @var array
+     */
+    //public $noteCount;
+    
+    /**
      * Whether the transcript is featured.
      *
      * @var integer
@@ -230,7 +237,7 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
      */
     public function getNotes()
     {
-    				// get table for this record class
+    	// get table for this record class
         return $this->getTable('TranscriptNote')->findBy(array('transcript_id' => $this->id, 'sort_field' => 'order'));
     }
     
