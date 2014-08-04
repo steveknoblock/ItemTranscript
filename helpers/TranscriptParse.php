@@ -15,9 +15,12 @@
 // todo: rename to TextTranscript
 // so $text_transcript-parse() works
 // and class is named after object not action
+// create beforeParse and afterParse callbacks
 class TranscriptParse {
 
 	public $text;
+	protected $options;
+	protected $map;
 	
 	protected $textBlocks;
 	
@@ -32,7 +35,7 @@ class TranscriptParse {
 	
 	public function parse() {
 		debug('TranscriptParse::parse()');
-		debug('Calling TranscriptParse::_dialog()');
+		//debug('Calling TranscriptParse::_dialog()');
 		$this->Blockify();
 		$o = '';
 		foreach ( $this->textBlocks as $k => $v ) {
@@ -56,20 +59,48 @@ class TranscriptParse {
 			if(preg_match('/^[A-Z]+ +\(O\/C\):/', $v)) {
 				$class = "offcamera";
 			}
-
-			// Process note references
-			if(preg_match('/(\[[0-9]+\])/', $v)) {
-				debug('matches note reference');
-				$title = 'This is yet another note.';
-				$v = preg_replace('/(\[[0-9]+\])/', '<note id="note_\\1">\\1</note>', $v);
-			}
+			
+			debug('process not references for this block');
+			$v = preg_replace('/\[([0-9]+)\]/', '<span class="note" title="noteRef\\1" id="note_\\1">[\\1]</span>', $v);
+			
+			debug('Processing note references');
+			//if($this->options['noterefs']) {
+				//$v = process_note_refs($v);
+			//}
+			
 			// assemble output block
 			$o .= '<div class="'. $class. '">'. $v ."</div>\n";
 		}
-		//debug('---->'.$o);
+		debug('---->'.$o);
 		debug('Exiting TranscriptParse::parse()');
 		//debug($this->text);
 		$this->text = $o;
+	}
+
+	public function process_note_refs($text) {
+			debug('matches note reference');
+			//$text = preg_replace('/\[([0-9]+)\]/', '<span class="note" title="noteRef\\1" id="note_\\1">[\\1]</span>', $text);
+		//return $text;
+	}
+
+	public function process_notes() {
+	debug("Processing notes");
+		$c = count($this->map);
+		debug("Processing $c notes");
+		foreach( $this->map as $i=>$note ) {
+		$note = html_escape($note);
+			debug('  noteRef'.$i);
+			$this->text = preg_replace('/noteRef'.$i.'/', $note, $this->text);
+		}
+	}
+	
+	// expects array map of name value pairs for each option
+	public function setOptions($options) {
+		$this->options = $options;
+	}
+
+	public function setMap($map) {
+		$this->map = $map;
 	}
 	
 	protected function Blockify()
@@ -84,10 +115,6 @@ class TranscriptParse {
 	protected function _dialog($v)
 	{
 	debug('TranscriptParse::_dialog()');
-	
-	
-	    
-
 	    debug('Exiting TranscriptParse::_dialog()');
 	    return $v;
 	}
@@ -104,7 +131,7 @@ class TranscriptParse {
 
 	}
 	
-
+	// for use with overlib, unused in ItemTranscript
 	protected function Noteify() {
 	
 		// Process note references in transcript text
@@ -114,7 +141,6 @@ class TranscriptParse {
 			}
 					  
 			$o .= '<p class="'. $class. '">'. $v ."</p>\n";
-	} // end fn
+	}
 
-} // end TranscriptParse
-
+}

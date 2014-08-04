@@ -289,6 +289,7 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
          * Get notes belonging to this transcript and add to view.
          * Add transcript to view.
          */
+         // Todo: needs access control for notes
 		$this->view->notes = $transcript->getNotes();
 		$this->view->transcript = $transcript;
     }
