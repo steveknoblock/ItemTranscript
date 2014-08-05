@@ -26,15 +26,15 @@ class TranscriptParse {
 	
 	public function __construct($text)
 	{
-		debug('TranscriptParse::__contstruct()');
+		//debug('TranscriptParse::__contstruct()');
 		//debug('Text: '. $text);
 		$this->text = $text;
 		//debug($this->text);
-		debug('Exiting TranscriptParse::__contstruct()');
+		//debug('Exiting TranscriptParse::__contstruct()');
 	}
 	
 	public function parse() {
-		debug('TranscriptParse::parse()');
+		//debug('TranscriptParse::parse()');
 		//debug('Calling TranscriptParse::_dialog()');
 		$this->Blockify();
 		$o = '';
@@ -49,21 +49,21 @@ class TranscriptParse {
 	
 			$class = "line"; // default
 			if(preg_match('/^[A-Z]+:/', $v)) {
-				debug('matches dialog');
+				//debug('matches dialog');
 				$class = "dialog";
 			}
 			if(preg_match('/^[A-Z]+ +\(V\/O\):/', $v)) {
-				debug('matches voiceover');
+				//debug('matches voiceover');
 				$class = "voiceover";
 			}
 			if(preg_match('/^[A-Z]+ +\(O\/C\):/', $v)) {
 				$class = "offcamera";
 			}
 			
-			debug('process not references for this block');
+			//debug('process not references for this block');
 			$v = preg_replace('/\[([0-9]+)\]/', '<span class="note" title="noteRef\\1" id="note_\\1">[\\1]</span>', $v);
 			
-			debug('Processing note references');
+			//debug('Processing note references');
 			//if($this->options['noterefs']) {
 				//$v = process_note_refs($v);
 			//}
@@ -71,25 +71,25 @@ class TranscriptParse {
 			// assemble output block
 			$o .= '<div class="'. $class. '">'. $v ."</div>\n";
 		}
-		debug('---->'.$o);
-		debug('Exiting TranscriptParse::parse()');
+		//debug('---->'.$o);
+		//debug('Exiting TranscriptParse::parse()');
 		//debug($this->text);
 		$this->text = $o;
 	}
 
 	public function process_note_refs($text) {
-			debug('matches note reference');
+			//debug('matches note reference');
 			//$text = preg_replace('/\[([0-9]+)\]/', '<span class="note" title="noteRef\\1" id="note_\\1">[\\1]</span>', $text);
 		//return $text;
 	}
 
 	public function process_notes() {
-	debug("Processing notes");
+	//debug("Processing notes");
 		$c = count($this->map);
-		debug("Processing $c notes");
+		//debug("Processing $c notes");
 		foreach( $this->map as $i=>$note ) {
 		$note = html_escape($note);
-			debug('  noteRef'.$i);
+			//debug('  noteRef'.$i);
 			$this->text = preg_replace('/noteRef'.$i.'/', $note, $this->text);
 		}
 	}
@@ -114,8 +114,8 @@ class TranscriptParse {
 
 	protected function _dialog($v)
 	{
-	debug('TranscriptParse::_dialog()');
-	    debug('Exiting TranscriptParse::_dialog()');
+	//debug('TranscriptParse::_dialog()');
+	    //debug('Exiting TranscriptParse::_dialog()');
 	    return $v;
 	}
 	

@@ -51,6 +51,7 @@
         </div>
         <div id="page-add">
             <input type="submit" name="add_note" id="add-note" value="<?php echo __('Add Note'); ?>" />
+            <?php echo $this->formHidden('transcript-id-hidden', $transcript->id); ?>
 		</div>
     </fieldset>
 </section>

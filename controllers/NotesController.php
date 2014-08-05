@@ -29,58 +29,40 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
 	 */
  	public function addAction()
 	{
-		debug('addAction');
+		debug('NotesController->addAction');
+		if($this->getRequest()) {
+			debug('getRequest');
+			if($this->getRequest()->isPost()) {
+					debug('is post');
+					//$transcriptId = $this->getRequest()->post('transcript_id');
+					$transcriptId = $this->getRequest()->getParam('transcript_id');
+				} else {
+					debug('is get');
+					$transcriptId = $this->getRequest()->get('transcript_id');
+				}
+		}
+		debug('Adding note to transcript: '. $transcriptId);
 		
-		//If no notes exist for this transcript
-		//    create the note
-		//    set order property to 1
-		// process the note form (saving the note)
+		$this->view->transcript_id = $transcriptId;
 		
-		
-		// I need to get a property from the Transcript noteCount. How
-		// do I do this?
-		// We must know which transcript this note is to be associated with
-		// and that the value must be coming in through the POST, so that
-		// is where to get the transcript id from.
-		
-		// No, no, no. Creating a new note does not always start with one!
-		// It needs to know whether it is creating the first note or not
-		// Okay, when you add a note, the order cannot be set to 1 on
-		// a hidden field in the form. That would force every note to
-		// order of 1.
-		// It is possible to use the hidden field to communicate the
-		// number of notes in the transcript note list. Could get
-		// that value before rendering the form and pass it to the
-		// hidden field.
-		
-		debug('Creating new note instance');
-		
-		// Create a new note.
+		debug('new Transcript Note');
 		$note = new TranscriptNote;
+		
 		// if transcript notes property empty (no notes)
 		// flag represents this status for hacking this in
-		
-		debug('Getting note count');
+		//debug('Getting note count');
 		// Get note count
-		$noteCount = get_db()->getTable('TranscriptNotes')->findBy(array('transcript_id' => $this->transcript_id));
-		debug('Note Count: '. $noteCount);
-		if( $noteCount == 0 ) {
-			$note->order = 1;
-		}
-		
-		$parentTranscriptId = $_POST['transcript_id'];
-		$_POST['order'] = 1;
-		
-		// Or I could just check the POSTed order value for nonexistence?
-		// Or the add form order hidden input could default to 1
+		//$noteCount = get_db()->getTable('TranscriptNotes')->findBy(array('transcript_id' => $this->transcript_id));
+		//debug('Note Count: '. $noteCount);
+		//if( $noteCount == 0 ) {
+		//	$note->order = 1;
+		//}
 		
 		if($this->getRequest()->isPost()) {
 			$this->_processTranscriptNoteForm($note, 'add');
-			// don't go to browse
-			//$this->helper->redirector('browse');
 		} else {
-			//$this->render('notes/add');
 		}
+		debug('exit addAction');
 	}
 
 
@@ -121,9 +103,10 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
 		if ($this->getRequest()->isPost()) {
 			debug('is POST request');
 			// this is one way to do it
-			if ('add' == $mode) {
-				$note->order = 1;
-			}
+			//if ('add' == $mode) {
+			//	$note->order = 1;
+			//}
+			debug('About to try save');
 			try {
 			$note->setPostData($_POST);
 			if ($note->save()) {

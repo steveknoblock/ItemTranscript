@@ -81,6 +81,8 @@ class ItemTranscriptPlugin extends Omeka_Plugin_AbstractPlugin
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
         $db->query($sql);
 
+	/*
+	 For possible future use.
         $sql = "
 		   CREATE TABLE IF NOT EXISTS `{$db->prefix}item_transcript_transcript_entries` (
 				`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -91,7 +93,7 @@ class ItemTranscriptPlugin extends Omeka_Plugin_AbstractPlugin
 				KEY `transcript_id_order` (`transcript_id`, `order`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
         $db->query($sql);    
-
+	*/
         $sql = "
 		   CREATE TABLE IF NOT EXISTS `{$db->prefix}item_transcript_transcript_notes` (
 				`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,

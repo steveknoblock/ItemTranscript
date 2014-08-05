@@ -76,13 +76,40 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
     {
 	    debug('editAction');
 	    
-	    /*
-	    if($_POST['submit']  == 'add_note') {
-	    	$this->_helper->redirector(array( 'item_transcript', 'notes', 'add'));
-	    }
-	    */
+	    $transcript = $this->_helper->db->findById();
 	    
-        $transcript = $this->_helper->db->findById();
+	    // FIXME: I am not working!
+	    debug('Checking for Add Note submission');
+	    //debug('Submit button value: '.$_POST['submit']);
+	    //debug('Dumping POST');
+	   // var_dump($_POST);
+	    
+	    if($_POST['add_note']) {
+	    
+	    	debug('About to redirect to route');
+	    	/*
+	    	$this->_helper->redirector->gotoRoute(
+	    	array(
+	    		'module'        => 'item-transcript',
+	    		'controller'    => 'notes',
+	    		'action'        => 'add',
+	    		'transcript_id' => $transcript->id,
+	    		'previous'      => $transcript->id
+	    		),'', true, true
+	    	);
+	    */
+	    $this->_helper->redirector->gotoSimple('add','notes','item-transcript',
+	    	array(
+	    		'transcript_id' => $transcript->id,
+	    		//'previous'      => $transcript->id
+	    		)
+	    	);
+	    
+	    	//$this->_helper->redirector(array( 'item_transcript', 'notes', 'add'));
+	    }
+	    
+	    
+        
         
         /**
          * Get notes belonging to this transcript.

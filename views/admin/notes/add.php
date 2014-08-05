@@ -14,9 +14,8 @@ echo head($head);
                 <?php echo $this->formTextarea('text', '',array( 'cols' => '55', 'rows' => '7')); ?>
             </div>
         </div>
-        
-        <?php // where are these values going to come from? ?>
-		<?php echo $this->formHidden('transcript_id','20'); ?>
+		<?php echo 'Transcript: '. $this->transcript_id; ?>
+		<?php echo $this->formHidden('transcript_id', $transcript_id); ?>
 		<?php echo $this->formHidden('order','3'); ?>
 
     <section class="three columns omega">
