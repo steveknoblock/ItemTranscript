@@ -12,7 +12,7 @@
  * @package ItemTranscript
  */
 
-class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Resource_Interface */
+class Transcript extends Omeka_Record_AbstractRecord implements Zend_Acl_Resource_Interface
 {
     /**
      * Transcript title.
@@ -215,7 +215,6 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
     }
 
 
-
     /**
      * Get all notes for this transcript.
      *
@@ -241,8 +240,6 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
         return $this->getTable('TranscriptNote')->findBy(array('transcript_id' => $this->id, 'sort_field' => 'order'));
     }
     
-    
-
 
 // not objects yet, notes are database rows, they must be instantiated as objects so they can be assigned as a collection of objects to this transcript
 
@@ -277,8 +274,7 @@ class Transcript extends Omeka_Record_AbstractRecord /* implements Zend_Acl_Reso
         }
     }
     
-    
-    
+
 	/**
 	 * Override getRecordUrl to take control over what URL 
 	 * is returned for this record in a given context.
