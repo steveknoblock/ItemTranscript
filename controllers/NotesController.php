@@ -24,9 +24,12 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
     }
 
 
-	/**
-	 * Add action
-	 */
+    /**
+     * Add Action
+     * Add a note to a transcript.
+     * The URL param 'id' refers to the note that will be contained by the transcript.
+     */
+
  	public function addAction()
 	{
 		debug('NotesController->addAction');
@@ -34,7 +37,6 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
 			debug('getRequest');
 			if($this->getRequest()->isPost()) {
 					debug('is post');
-					//$transcriptId = $this->getRequest()->post('transcript_id');
 					$transcriptId = $this->getRequest()->getParam('transcript_id');
 				} else {
 					debug('is get');
@@ -42,21 +44,55 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
 				}
 		}
 		debug('Adding note to transcript: '. $transcriptId);
-		
+
 		$this->view->transcript_id = $transcriptId;
 		
-		debug('new Transcript Note');
 		$note = new TranscriptNote;
-		
-		// if transcript notes property empty (no notes)
-		// flag represents this status for hacking this in
-		//debug('Getting note count');
+
+		// assign to transcript
+		$note->transcript_id = $transcriptId;
+
 		// Get note count
-		//$noteCount = get_db()->getTable('TranscriptNotes')->findBy(array('transcript_id' => $this->transcript_id));
-		//debug('Note Count: '. $noteCount);
-		//if( $noteCount == 0 ) {
-		//	$note->order = 1;
-		//}
+
+// Note: no transcript_id property is available since it hasn't been created yet
+// maybe get it from param and set it right after new note?
+		debug('Get note count');
+		
+		/*
+		$this->getTable('ExhibitPage')->count(
+			array(
+           		'exhibit' => $this->id,
+           		'topOnly' => $topOnly
+           		)
+           	)
+		
+		return $this->getTable('ExhibitPage')->count(array('exhibit' => $this->id, 'topOnly' => $topOnly))
+        */
+		$noteCount = $this->_helper->db->getTable('TranscriptNote')->count(array('transcript_id' => $transcriptId));
+		debug('Note Count: '. $noteCount);
+/*
+2014-08-08T10:53:27-04:00 DEBUG (7): SELECT COUNT(DISTINCT(transcript_notes.id)) FROM `omeka_transcript_notes` AS `transcript_notes` WHERE (transcript_notes.transcript_id = '36')
+2014-08-08T10:53:27-04:00 DEBUG (7): Note Count: 28
+
+2014-08-08T11:06:23-04:00 DEBUG (7): SELECT COUNT(DISTINCT(transcript_notes.id)) FROM `omeka_transcript_notes` AS `transcript_notes` WHERE (transcript_notes.transcript_id = '36')
+2014-08-08T11:06:23-04:00 DEBUG (7): Note Count: 29
+*/
+		
+
+		/* Note order. The note order should be set to one for the first
+		 * note added, after that the order should increment by one from
+		 * the last note: total_notes + 1;
+		 */
+		$note->order = $noteCount + 1;
+		if( $noteCount == 0 ) {
+			$note->order = 1;
+		}
+		
+		
+		// because on addAction, the note order is always zero, then add
+		// one and you've got one. The note order must never be null.
+		// The order property does not change when editing a note, but it must be initialized when the note is created, to something other than null, it must be zero or one.
+		// When is the note order property incremented? One edit? No. On add? No (unless its zero---notes start from one). However, on add, the note order must be set to total_notes + 1 to be correct.
 		
 		if($this->getRequest()->isPost()) {
 			$this->_processTranscriptNoteForm($note, 'add');
@@ -80,7 +116,7 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
       */
     public function editAction()
     {
-	    debug('editAction');
+	   	debug('NotesController->editAction');
 	    $note = $this->_helper->db->findById();
 	    //var_dump($note);
 	    $this->view->note = $note;
@@ -103,10 +139,17 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
 		if ($this->getRequest()->isPost()) {
 			debug('is POST request');
 			// this is one way to do it
+			// wrong, because it picks up the first add, but add is called for
+			// all other notes too
+			// unnecessary here, because this can be done in addAction and
+			// doesn't need to be done on note edit
 			//if ('add' == $mode) {
 			//	$note->order = 1;
 			//}
-			debug('About to try save');
+			
+			// if adding a note, the order must be set to 1 for the first note, and N for the rest
+			
+			
 			try {
 			$note->setPostData($_POST);
 			if ($note->save()) {
@@ -200,7 +243,7 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
      */
     public function showAction()
     {
-    	debug('showAction');
+    			debug('NotesController->showAction');
         
         /*
         if (!$note) {
@@ -239,49 +282,6 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
     }
 
 
-    /**
-     * Add a note to a transcript.
-     *
-     * The URL param 'id' refers to the note that will be contained by the transcript.
-     */
-    public function addNoteAction()
-    {
-        $db = $this->_helper->db->getDb();
-        $request = $this->getRequest();
-        $noteId = $request->getParam('id');
-
-        $note = new TranscriptNote;
-        $note->transcript_id = $noteId;
-        $exhibit = $note->getExhibit();
-
-
-        /* Todo: Set the order for the new note
-        if($previousPageId) {
-            //set the order to be right after the previous one. Page's beforeSave method will bump up later page orders as needed
-            $previousPage = $db->getTable('ExhibitPage')->find($previousPageId);
-            $note->parent_id = $previousPage->parent_id;
-            $note->order = $previousPage->order + 1;
-        } else {
-            $childCount = $exhibit->countPages(true);
-            $note->order = $childCount +1;
-        }
-        */
-
-        $success = $this->processPageForm($note, 'Add', $exhibit);
-        if ($success) {
-            $this->_helper->flashMessenger("Changes to the transcripts's note were successfully saved!", 'success');
-            if (array_key_exists('add-another-page', $_POST)) {
-                $this->_helper->redirector->gotoRoute(array('action' => 'add-page', 'id' => $exhibit->id, 'previous' => $note->id), 'exhibitStandard');
-            } else {
-                $this->_helper->redirector->gotoRoute(array('action' => 'edit-page', 'id' => $note->id), 'exhibitStandard');
-            }
-            return;
-        }
-
-        $this->render('page-form');
-    }
-    
-    
     /**
      * Handle the POST for the note add and edit actions.
      *

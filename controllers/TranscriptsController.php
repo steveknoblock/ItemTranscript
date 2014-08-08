@@ -51,10 +51,6 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
 			//debug('Getting form');
 			// Omeka_Form_Admin is too simple to handle the item data
 			//$tmp = $this->_getForm($transcript);
-			//debug('Displaying form');
-			//$this->view->form = $tmp;
-			//$this->render('transcript-form');
-			
 			$this->render('add');
 		}
 	}
@@ -73,61 +69,28 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
       * on editAction().
       */
     public function editAction()
-    {
-	    debug('editAction');
-	    
+    {   
+    	debug('TranscriptsController::editAction');
 	    $transcript = $this->_helper->db->findById();
 	    
-	    // FIXME: I am not working!
-	    debug('Checking for Add Note submission');
-	    //debug('Submit button value: '.$_POST['submit']);
-	    //debug('Dumping POST');
-	   // var_dump($_POST);
-	    
 	    if($_POST['add_note']) {
-	    
-	    	debug('About to redirect to route');
-	    	/*
-	    	$this->_helper->redirector->gotoRoute(
-	    	array(
-	    		'module'        => 'item-transcript',
-	    		'controller'    => 'notes',
-	    		'action'        => 'add',
-	    		'transcript_id' => $transcript->id,
-	    		'previous'      => $transcript->id
-	    		),'', true, true
-	    	);
-	    */
 	    $this->_helper->redirector->gotoSimple('add','notes','item-transcript',
 	    	array(
 	    		'transcript_id' => $transcript->id,
 	    		//'previous'      => $transcript->id
 	    		)
 	    	);
-	    
-	    	//$this->_helper->redirector(array( 'item_transcript', 'notes', 'add'));
 	    }
-	    
-	    
-        
-        
+
         /**
          * Get notes belonging to this transcript.
          */
 		$transcript->notes = $transcript->getNotes();
 		
 		
-        //$this->view->form = $this->_getForm($transcript);
-       // $this->view->id = $transcript->id;
-        //$this->view->title = $transcript->title; // I shouldn't need to do this ?
-        
-        //$transcript_id = $transcript->id;
-        
+        //$this->view->form = $this->_getForm($transcript);      
        //$transcript->notes = $this->getNotes();
-        
-        //$this->view->description = $transcript->title;
-        //$this->view->entry = $transcript->entry;
-        
+               
         // okay, model objects must be injected explicity into view
         // $this->view->exhibit = $exhibit;
         $this->view->transcript = $transcript;
@@ -140,13 +103,10 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
 	 */
 	protected function _processTranscriptForm($transcript, $mode)
 	{
-		debug('Processing transcript form');
 		// don't display messages or save if not POST mode request
 		if ($this->getRequest()->isPost()) {
 			try {
 			$transcript->setPostData($_POST); // copied from exhibits q: why refer to php post var when request is available?
-		
-			debug('About to save transcript');
 			if ($transcript->save()) {
 				if ('add' == $mode) {
 					$this->_helper->flashMessenger(__('The new transcript "%s" has been saved.', $transcript->title), 'success');
@@ -284,34 +244,19 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
      */
     public function showAction()
     {
-    	debug('showAction');
-        
-        /*
-        if (!$transcript) {
-            throw new Omeka_Controller_Exception_404;
+        /**
+         * Restrict access to the page when it is not published.
+         */
+        if (!$transcript->is_published 
+            && !$this->_helper->acl->isAllowed('show-unpublished')) {
+            throw new Omeka_Controller_Exception_403;
         }
-        */
-        
-        debug('About to get id parameter value');
         
         // Get the page object from the passed ID.
         $transcriptId = $this->_getParam('id');
         
-        debug('Looking for transcript: '. $transcriptId);
-        
         $transcript = $this->_helper->db->getTable('Transcript')->find($transcriptId);
-        
-        //var_dump($foo);
-       	// 'ItemTranscript_Transcript is converted to
-        // omeka_item_transcript_transcripts
-        
-        /* Restrict access to the page when it is not published.
-        if (!$page->is_published 
-            && !$this->_helper->acl->isAllowed('show-unpublished')) {
-            throw new Omeka_Controller_Exception_403;
-        }
-        */
-        
+
         /**
          * Get notes belonging to this transcript and add to view.
          * Add transcript to view.
@@ -350,7 +295,8 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
         
     /**
      * Use global settings for determining browse page limits.
-     *
+     * This function determines the display of records on browseAction
+     * automatically called by browseAction.
      * @return int
      */
     public function _getBrowseRecordsPerPage()

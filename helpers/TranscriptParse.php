@@ -142,5 +142,26 @@ class TranscriptParse {
 					  
 			$o .= '<p class="'. $class. '">'. $v ."</p>\n";
 	}
+	
+	
+	/**
+	 * Renumber notes
+	 */
+	 
+	 public reorderNoteRefs() {
+	 
+	 	$text = $this->text;
+	 
+	 	// find all [\d], get value and add one, then replace
+	 	
+	 	// create array of
+	 	preg_match('@\[\d+\]@', $matches, $text);
+	 	
+	 	foreach($matches as $match) {
+	 		preg_replace('@\['.$match.'\]', '['. ($match + 1) .']', $text);
+	 	}
+	 	
+	 }
+	
 
 }

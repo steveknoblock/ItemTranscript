@@ -16,7 +16,7 @@ echo head($head);
         </div>
 		<?php echo 'Transcript: '. $this->transcript_id; ?>
 		<?php echo $this->formHidden('transcript_id', $transcript_id); ?>
-		<?php echo $this->formHidden('order','3'); ?>
+		<?php echo $this->formHidden('order-hidden','3'); ?>
 
     <section class="three columns omega">
         <div id="save" class="panel">

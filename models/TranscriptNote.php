@@ -159,6 +159,6 @@ class TranscriptNote extends Omeka_Record_AbstractRecord /* implements Zend_Acl_
      */
     public function getResourceId()
     {
-        return 'ItemTranscript_Transcripts';
+        return 'ItemTranscript_TranscriptNote';
     }
 }

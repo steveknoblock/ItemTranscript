@@ -19,6 +19,7 @@ class Table_Transcript extends Omeka_Db_Table
 	 */
     public function applySearchFilters($select, $params)
     {
+    	debug('Table_Transcript->applySearchFilters');
     /*
         if(array_key_exists('public', $params)) {
             $this->filterByPublic($select, $params['public']);
@@ -82,7 +83,7 @@ class Table_Transcript extends Omeka_Db_Table
 
     public function getSelect()
     {
-    
+    	debug('Table_Transcript->getSelect');
        /*
         $select = parent::getSelect();
         $permissions = new Omeka_Db_Select_PublicPermissions('Collections');
