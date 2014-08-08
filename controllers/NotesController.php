@@ -198,13 +198,7 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
      */
     public function showAction()
     {
-    			debug('NotesController->showAction');
-        
-        /*
-        if (!$note) {
-            throw new Omeka_Controller_Exception_404;
-        }
-        */
+    	debug('NotesController->showAction');
         
         debug('About to get id parameter value');
         

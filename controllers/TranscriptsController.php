@@ -31,7 +31,7 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
      */
     public function addAction()
     {
-    	//debug('addAction');
+    	debug('addAction');
 
         // Create a new transcript.
        	$transcript = new Transcript;
@@ -70,7 +70,7 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
       */
     public function editAction()
     {   
-    	debug('TranscriptsController::editAction');
+    	debug('TranscriptsController->editAction');
 	    $transcript = $this->_helper->db->findById();
 	    
 	    if($_POST['add_note']) {
@@ -217,9 +217,8 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
     /**
      * Browse transcripts action.
      */
-    public function browseAction()
-    {
-    	debug('In browseAction');
+    public function browseAction() {
+	    debug('TranscriptsController->browseAction');
         //$request = $this->getRequest();
         //$sortParam = $request->getParam('sort');
         //$sortOptionValue = get_option('item_transcript_sort_browse');
@@ -244,6 +243,7 @@ class ItemTranscript_TranscriptsController extends Omeka_Controller_AbstractActi
      */
     public function showAction()
     {
+    	debug('TranscriptsController->showAction');
         /**
          * Restrict access to the page when it is not published.
          */

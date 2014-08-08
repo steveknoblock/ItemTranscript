@@ -109,7 +109,7 @@ class Transcript extends Omeka_Record_AbstractRecord implements Zend_Acl_Resourc
      */
     protected function beforeSave($args)
     {
-    	debug('Transcript::beforeSave');
+    	debug('Transcript->beforeSave');
         if ($args['post']) {
             $post = $args['post'];
             
@@ -127,7 +127,7 @@ class Transcript extends Omeka_Record_AbstractRecord implements Zend_Acl_Resourc
      */
     protected function afterSave($args)
     {
-    	debug('Transcript::afterSave');
+    	debug('Transcript->afterSave');
     	if(!$this->public) {
     		$this->setSearchTextPrivate();
     	}

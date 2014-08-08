@@ -50,12 +50,11 @@ class Table_TranscriptNote extends Omeka_Db_Table
     
      */
     public function applySearchFilters($select, $params) {
-    	debug('in TranscriptNote applySearchFilters');
+    	debug('TranscriptNote->applySearchFilters');
     	//parent::applySearchFilters();
-    	
-    	foreach( $params as $param ) {
-    	debug('params: '.$param);
-    	}
+    	//foreach( $params as $param ) {
+    	//	debug('params: '.$param);
+    	//}
     	 if(isset($params['transcript_id'])) {
     	 	debug('Transcript id exists');
     	 }

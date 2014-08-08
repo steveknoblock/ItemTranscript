@@ -60,7 +60,7 @@ class TranscriptParse {
 				$class = "offcamera";
 			}
 			
-			//debug('process not references for this block');
+			debug('process note references for this block');
 			$v = preg_replace('/\[([0-9]+)\]/', '<span class="note" title="noteRef\\1" id="note_\\1">[\\1]</span>', $v);
 			
 			//debug('Processing note references');
@@ -69,27 +69,29 @@ class TranscriptParse {
 			//}
 			
 			// assemble output block
+			debug('assembling output block');
 			$o .= '<div class="'. $class. '">'. $v ."</div>\n";
 		}
 		//debug('---->'.$o);
-		//debug('Exiting TranscriptParse::parse()');
+		debug('Exiting TranscriptParse::parse()');
 		//debug($this->text);
 		$this->text = $o;
 	}
-
+	
+	
 	public function process_note_refs($text) {
-			//debug('matches note reference');
-			//$text = preg_replace('/\[([0-9]+)\]/', '<span class="note" title="noteRef\\1" id="note_\\1">[\\1]</span>', $text);
-		//return $text;
+			debug('matches note reference');
+			$text = preg_replace('/\[([0-9]+)\]/', '<span class="note" title="noteRef\\1" id="note_\\1">[\\1]</span>', $text);
+		return $text;
 	}
 
 	public function process_notes() {
-	//debug("Processing notes");
+		debug("Processing notes");
 		$c = count($this->map);
-		//debug("Processing $c notes");
+		debug("Processing $c notes");
 		foreach( $this->map as $i=>$note ) {
 		$note = html_escape($note);
-			//debug('  noteRef'.$i);
+			debug('  noteRef'.$i);
 			$this->text = preg_replace('/noteRef'.$i.'/', $note, $this->text);
 		}
 	}
@@ -151,7 +153,7 @@ class TranscriptParse {
 	 * Renumber notes
 	 */
 	 
-	 public reorderNoteRefs() {
+	 public function reorderNoteRefs() {
 	 
 	 	$text = $this->text;
 	 

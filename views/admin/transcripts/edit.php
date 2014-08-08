@@ -30,7 +30,7 @@
         </div>        
 		<div class="field">
             <div class="two columns alpha">
-                <?php echo $this->formLabel('entry', __('Transcript Entry')); ?>
+                <?php echo $this->formLabel('entry', __('Transcript Text')); ?>
             </div>
             <div class="five columns omega inputs">
                 <?php echo $this->formTextarea('entry', $this->transcript->entry); ?>
@@ -59,11 +59,18 @@
    <section id="save" class="three columns omega panel">
             <?php echo $this->formSubmit('save_transcript', __('Save Changes'), array('class'=>'submit big green button')); ?>
             <?php if ($transcript->exists()): ?>
-                <a href="<?php echo html_escape(record_url('transcript')); ?>">
+            <?php
+                $uri = public_url(array(
+        	'module' => 'item-transcript',
+        	'controller' => 'transcripts',
+        	'action' => 'show',
+           	'id' => $transcript->id
+           	), '', array(), false, false); 
+           	
+           	?>
+                <a href="<?php echo html_escape($uri); ?>" class='big blue button' 'target' = '_blank'>
                         <?php echo __('View Public Transcript'); ?>
                 </a>
-                <?php //echo item_transcript_link_to_transcript($transcript, __('View Public Transcript'), array('class' => 'big blue button', 'target' => '_blank')); ?>
-                
                 <?php echo link_to($transcript, 'delete-confirm', __('Delete'), array('class' => 'big red button delete-confirm')); ?>
             <?php endif; ?>
             <div id="public-featured">
