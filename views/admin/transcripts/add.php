@@ -24,24 +24,7 @@
 <textarea name="entry" id="item-transcript-entry" cols="50" rows="7"></textarea>
 </div>
 </div>
-</section>
-
-<section class="seven columns">
-    <fieldset>
-        <legend><?php echo __('Notes'); ?></legend>
-        <div id="notes-list-container">
-            <?php if (!$transcript->notes): ?>
-                <p><?php echo __('There are no notes.'); ?></p>
-            <?php else: ?>
-                <p id="reorder-instructions"><?php echo __('To reorder notes, click and drag the page up or down to the preferred location.'); ?></p>
-                <?php echo common('notes-list', array('transcript' => $transcript), 'transcripts'); ?>
-            <?php endif; ?>
-        </div>
-        <div id="note-add">
-            <input type="submit" name="add_note" id="add-note" value="<?php echo __('Add Note'); ?>" />
-        </div>
-    </fieldset>
-</section>    
+</section> 
     
 <section id="save" class="three columns omega panel"><input id='save-changes' class='submit big green button' type='submit' value='Save Changes' name='submit' />
 	<div class="field"><div id="item-transcript-is-published-label" class="two columns alpha"><label for="item-transcript-is-published" class="optional">Publish this transcript?</label>

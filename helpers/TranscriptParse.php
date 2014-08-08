@@ -94,14 +94,17 @@ class TranscriptParse {
 		}
 	}
 	
+	
 	// expects array map of name value pairs for each option
 	public function setOptions($options) {
 		$this->options = $options;
 	}
 
+
 	public function setMap($map) {
 		$this->map = $map;
 	}
+	
 	
 	protected function Blockify()
 	{
@@ -119,16 +122,16 @@ class TranscriptParse {
 	    return $v;
 	}
 	
-	
-	protected function Timeify() {
 
 	/**
 	 * Process time codes into links
 	 *
 	 */
 	
-	//$v = preg_replace('/(\dd:\dd)/', 'rtsp://video.ibiblio.org/folkstreams/video/the_music_district.rm?start=12:45&end=25:54', $v);
-
+	protected function Timeify() {
+		/* Typical example for external RTSP server
+		$v = preg_replace('/(\dd:\dd)/', 'rtsp://video.ibiblio.org/folkstreams/video/the_music_district.rm?start=12:45&end=25:54', $v);
+		*/
 	}
 	
 	// for use with overlib, unused in ItemTranscript

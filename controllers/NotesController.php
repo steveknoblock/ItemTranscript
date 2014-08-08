@@ -29,56 +29,34 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
      * Add a note to a transcript.
      * The URL param 'id' refers to the note that will be contained by the transcript.
      */
-
  	public function addAction()
 	{
 		debug('NotesController->addAction');
 		if($this->getRequest()) {
-			debug('getRequest');
+			//debug('getRequest');
 			if($this->getRequest()->isPost()) {
-					debug('is post');
+					//debug('is post');
 					$transcriptId = $this->getRequest()->getParam('transcript_id');
 				} else {
-					debug('is get');
+					//debug('is get');
 					$transcriptId = $this->getRequest()->get('transcript_id');
 				}
 		}
-		debug('Adding note to transcript: '. $transcriptId);
+		//debug('Adding note to transcript: '. $transcriptId);
 
 		$this->view->transcript_id = $transcriptId;
 		
 		$note = new TranscriptNote;
-
 		// assign to transcript
 		$note->transcript_id = $transcriptId;
 
+		// Note: no transcript_id property is available since it hasn't been created yet
+		// maybe get it from param and set it right after new note?
 		// Get note count
-
-// Note: no transcript_id property is available since it hasn't been created yet
-// maybe get it from param and set it right after new note?
 		debug('Get note count');
-		
-		/*
-		$this->getTable('ExhibitPage')->count(
-			array(
-           		'exhibit' => $this->id,
-           		'topOnly' => $topOnly
-           		)
-           	)
-		
-		return $this->getTable('ExhibitPage')->count(array('exhibit' => $this->id, 'topOnly' => $topOnly))
-        */
 		$noteCount = $this->_helper->db->getTable('TranscriptNote')->count(array('transcript_id' => $transcriptId));
 		debug('Note Count: '. $noteCount);
-/*
-2014-08-08T10:53:27-04:00 DEBUG (7): SELECT COUNT(DISTINCT(transcript_notes.id)) FROM `omeka_transcript_notes` AS `transcript_notes` WHERE (transcript_notes.transcript_id = '36')
-2014-08-08T10:53:27-04:00 DEBUG (7): Note Count: 28
-
-2014-08-08T11:06:23-04:00 DEBUG (7): SELECT COUNT(DISTINCT(transcript_notes.id)) FROM `omeka_transcript_notes` AS `transcript_notes` WHERE (transcript_notes.transcript_id = '36')
-2014-08-08T11:06:23-04:00 DEBUG (7): Note Count: 29
-*/
-		
-
+	
 		/* Note order. The note order should be set to one for the first
 		 * note added, after that the order should increment by one from
 		 * the last note: total_notes + 1;
@@ -88,17 +66,10 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
 			$note->order = 1;
 		}
 		
-		
-		// because on addAction, the note order is always zero, then add
-		// one and you've got one. The note order must never be null.
-		// The order property does not change when editing a note, but it must be initialized when the note is created, to something other than null, it must be zero or one.
-		// When is the note order property incremented? One edit? No. On add? No (unless its zero---notes start from one). However, on add, the note order must be set to total_notes + 1 to be correct.
-		
 		if($this->getRequest()->isPost()) {
 			$this->_processTranscriptNoteForm($note, 'add');
 		} else {
 		}
-		debug('exit addAction');
 	}
 
 
@@ -118,12 +89,8 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
     {
 	   	debug('NotesController->editAction');
 	    $note = $this->_helper->db->findById();
-	    //var_dump($note);
 	    $this->view->note = $note;
-	   // parent::editAction();
-       $this->_processTranscriptNoteForm($note, 'edit');
-       // $this->render('notes/edit');
-       
+       $this->_processTranscriptNoteForm($note, 'edit');       
        // note automatically redirects to browse
        // I need to prevent this and redirect to either this edit page or the transcript page
     }
@@ -138,25 +105,13 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
 		// don't display messages or save if not POST mode request
 		if ($this->getRequest()->isPost()) {
 			debug('is POST request');
-			// this is one way to do it
-			// wrong, because it picks up the first add, but add is called for
-			// all other notes too
-			// unnecessary here, because this can be done in addAction and
-			// doesn't need to be done on note edit
-			//if ('add' == $mode) {
-			//	$note->order = 1;
-			//}
-			
-			// if adding a note, the order must be set to 1 for the first note, and N for the rest
-			
-			
 			try {
 			$note->setPostData($_POST);
 			if ($note->save()) {
 				if ('add' == $mode) {
-					$this->_helper->flashMessenger(__('The new note "%s" has been saved.', $note->title), 'success');
+					$this->_helper->flashMessenger(__('The new note "%s" has been saved.', $note->order), 'success');
 				} else if ('edit' == $mode) {
-					$this->_helper->flashMessenger(__('The edited note "%s" has been saved.', $note->title), 'success');
+					$this->_helper->flashMessenger(__('The edited note "%s" has been saved.', $note->order), 'success');
 				}
 				debug('redirecting to browse');
 				// don't browse
@@ -220,7 +175,7 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
 	 	return $form;
 	}
 
-                     //_getDeleteSuccessMessage() override
+
     protected function _getDeleteSuccessMessage($record)
     {
         return __('The note "%s" has been deleted.', $record->order);
@@ -259,9 +214,6 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
         debug('Looking for transcript: '. $noteId);
         
         $note = $this->_helper->db->getTable('Transcript')->find($noteId);
-        //var_dump($foo);
-       	// 'ItemTranscript_Transcript is converted to
-        // omeka_item_transcript_transcripts
         
         /* Restrict access to the page when it is not published.
         if (!$page->is_published 
@@ -272,12 +224,10 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
         
         $note_notes = findByTranscript($note);
         
-        
 		$this->view->transcript = $note;
 		debug('About to render view');
 		$this->render('show');
-        
-        
+		
          parent::showAction();
     }
 
@@ -305,8 +255,6 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
         }
     }
     
-    
-    
     /**
      * Use global settings for determining browse page limits.
      *
@@ -320,17 +268,4 @@ class ItemTranscript_NotesController extends Omeka_Controller_AbstractActionCont
             return (int) get_option('per_page_public');
         }
     }
-
-    /**
-     * List tags for exhibits action.
-     */
-    public function tagsAction()
-    {
-        $params = array_merge($this->_getAllParams(), array('type'=>'Transcript'));
-        $tags = $this->_helper->db->getTable('Tag')->findBy($params);
-        $this->view->assign(compact('tags'));
-    }
-
-
-
 }
